@@ -2,6 +2,8 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/pacchetto-schemi-studio/blob/main/Demo_Pacchetto_Schemi_Colab.ipynb)
 
+![Cosa trovi nelle cartelle](img/cartelle.png)
+
 ![Come funziona](img/come_funziona.png)
 
 - **Prova in 1 clic:** bottone Colab qui sopra. Niente chiavi, gira sugli esempi inclusi.
