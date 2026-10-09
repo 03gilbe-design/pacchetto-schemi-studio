@@ -22,6 +22,7 @@ Tirocinio di Informatica (UniVR): dai miei schemi di studio estraggo un **vocabo
 | 3 | [Collega schema e pagina del prof](docs/video/3_collega_schema_pagina_prof.mp4) | stesso numero e colore = stesso pezzo; con testo 15/15 |
 | 4 | [Numeri e controllo OK/FUORI](docs/video/4_numeri_OK_FUORI.mp4) | i 4 numeri che cambiano il modello e `controlla_stile.py` |
 | 5 | [Chat Claude gratuita](docs/video/5_chat_claude_gratuita.mp4) | 3 file + 1 riga, poi «correggi»: 2 difetti sistemati |
+| 6 | [Usare il codice](docs/video/6_usare_il_codice.mp4) | i 3 comandi lanciati davvero, con il loro output: misura, controlla OK/FUORI, collega |
 | 7 | [In chat, passo per passo](docs/video/7_in_chat_passo_passo.mp4) | quali file allegare e cosa scrivere: prompt, «correggi», «quale regola non era chiara?» |
 
 | Cartella | Cosa c'è |
