@@ -4,7 +4,14 @@ Tre strumenti: due solo codice (collega_deterministico, annotatore), uno con un 
 
 ## collega_deterministico.py (solo codice; su Colab: `Collega_Pagine_Colab.ipynb`)
 **Cosa fa:** per ogni pagina dei tuoi schemi (PDF o PNG) trova la pagina del prof più simile (PDF o PNG). Riusa `annotatore/prepara.py` (`pagine_prof`, `migliori`: parole rare in comune pesate IDF) quando c'è testo; senza testo ripiega su hash percettivo + istogramma. Per ogni coppia conta le frasi del prof ritrovate nello schema (`frasi_prof`, `blocchi_miei` di `3_numeri_da_appunti/allinea_auto.py`, `parole` di `allinea.py`). Con `--generate` lancia `trova_differenze.py` con `--prof-parole` = mediana delle pagine del prof collegate.
-**Prova (Architettura, 7 pagine di schemi, 3 PDF del prof, 314 pagine):** testo 6/6 giuste sulle pagine con verità nota (p.2-7); vista (stessi schemi come PNG) 0/6: il ripiego visivo riconosce la stessa pagina (prof.png -> PDF del prof 6/6) ma non uno schema disegnato contro una slide.
+**Prova (09/10, 15 schemi di Architettura con fonte nota, 3 PDF del prof = 314 pagine; giusta = stesso PDF e pagina ±1):**
+
+| | solo codice | codice + Gemini (fra i 5 del codice) | Gemini su tutte le pagine (`--gemini`) |
+|---|---|---|---|
+| con testo (PDF) | 15/15 | 13/15 | - |
+| solo immagini | 1/15 | 3/15 (la giusta era fra i 5 solo 8 volte) | 13/15 (giusta fra le 3 finaliste 15/15) |
+
+Quindi: col testo basta il codice (Gemini sbaglia 2 volte); senza testo serve `--gemini`, che usa Gemini solo sulle pagine senza testo: fogli di miniature numerate di tutte le pagine del prof -> 3 finaliste -> 1 (2 chiamate per pagina). Se la seconda chiamata non sceglie, tiene la prima finalista (sulle stesse risposte: 14/15). Grafico: `collega_codice_vs_gemini.png`. Il test è stato fatto con Gemini 3.8 Flash via CLI `agy`; la chiave API locale era senza credito, quindi la strada via API (`--gemini`) è provata solo con risposte finte.
 ```
 python collega_deterministico.py --schemi miei.pdf --prof prof1.pdf prof2.pdf [--generate cartella_AI] [--out risultati_collega_det]
 ```
