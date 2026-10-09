@@ -1,4 +1,6 @@
-# Pacchetto schemi di studio
+# Vocabolario di stile per generare schemi di studio (tirocinio UniVR)
+
+Tirocinio di Informatica (UniVR): dai miei schemi di studio estraggo un **vocabolario di regole** (cosa fare, cosa non fare, stile, numeri misurabili) e lo do a un modello (Claude/GPT) perché generi schemi nuovi nel mio stile. Gli strumenti misurano quanto la pagina generata somiglia ai miei schemi e collegano ogni schema alla pagina del prof da cui nasce.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/pacchetto-schemi-studio/blob/main/Demo_Pacchetto_Schemi_Colab.ipynb)
 
