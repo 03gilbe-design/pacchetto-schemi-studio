@@ -1,0 +1,15 @@
+.env
+*.env
+*auth*.json
+__pycache__/
+*.pyc
+_tmp/
+# config locale con i percorsi del tuo PC (parti da materiali.esempio.json)
+materiali.json
+# file pesanti / generati
+*.tar
+risultati_collega/
+risultati_numeri/
+
+# pagina del docente (materiale del corso): resta sul disco, non va pubblicata
+esempi/p03_cache_associativo.png

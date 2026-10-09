@@ -1,0 +1,13 @@
+{
+ "architettura": {
+  "porta": 8777,
+  "titolo": "Architettura",
+  "miei": [
+   ["schemi_architettura", "C:\percorso\ai\tuoi\schemi_architettura.pdf"]
+  ],
+  "prof": [
+   "C:\percorso\al\pdf_del_prof_1.pdf",
+   "C:\percorso\al\pdf_del_prof_2.pdf"
+  ]
+ }
+}

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Cache associativa a gruppi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:794px;height:1123px;overflow:hidden;background:#FAF6EF;color:#997E71;font-family:"Segoe UI",Arial,sans-serif;font-size:12px;display:flex;flex-direction:column}
+.band{background:#F2AA84;padding:16px 28px 12px;display:flex;flex-direction:column;gap:8px}
+h1{font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-weight:normal;font-size:31px;color:#FF654C;background:#fff;align-self:flex-start;padding:2px 16px;border-radius:6px}
+.ctx{display:flex;align-items:center;gap:10px;color:#795548;font-size:13px}
+.ctx span{background:#fff;padding:3px 10px;border-radius:12px}
+.ctx b{color:#795548}
+section{padding:0 28px}
+.lab{font-size:11px;color:#997E71;letter-spacing:.5px;text-transform:uppercase;margin:12px 0 4px}
+.lab em{font-style:normal;color:#FF654C;font-weight:700}
+svg text{font-family:"Segoe UI",Arial,sans-serif}
+.addr{display:flex;gap:0;margin-top:4px;align-items:stretch}
+.addr div{border:1.5px solid #795548;padding:6px 4px;text-align:center;color:#795548}
+.addr .e{flex:6;background:#C2D9E5}
+.addr .g{flex:6;background:#F2AA84;border-color:#FF654C;border-width:2.2px}
+.addr .o{flex:4;background:#fff}
+.addr b{display:block;font-size:19px;letter-spacing:2px;color:#795548}
+.addr small{font-size:11px;color:#997E71}
+.row{display:flex;gap:14px;align-items:stretch}
+.card{flex:1;border:1.5px solid #C8B8B0;border-radius:8px;padding:8px 10px;background:#fff}
+.card h3{font-size:12px;color:#795548;margin-bottom:4px}
+.pos{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:11px}
+.pos i{font-style:normal;display:inline-block;padding:2px 6px;border:1.5px solid #795548;color:#795548;background:#fff;min-width:52px;text-align:center;font-weight:700;letter-spacing:1px}
+.pos .t{width:60px;color:#997E71}
+.ok{background:#C2D9E5 !important}
+.hit{color:#FF654C;font-weight:700}
+.no{color:#997E71}
+.spec{display:flex;gap:10px;align-items:stretch}
+.spec .s{flex:1;text-align:center;border-top:2.2px solid #C8B8B0;padding-top:6px;color:#997E71;font-size:11px}
+.spec .mid{border-top:3px solid #FF654C;color:#795548}
+.spec .s b{display:block;color:#795548;font-size:12px}
+.res{margin:auto 28px 22px;border-top:3px solid #FF654C;padding-top:8px;display:flex;align-items:center;gap:14px}
+.res .r{font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;font-size:20px;color:#FF654C;line-height:1.25}
+.res .q{font-size:11px;color:#997E71}
+</style>
+</head>
+<body>
+
+<div class="band">
+  <h1>Cache associativa a gruppi</h1>
+  <div class="ctx"><span><b>Parto da:</b> indirizzo di memoria (16 bit)</span><svg width="40" height="12"><path d="M2 6H34M28 1L36 6L28 11" fill="none" stroke="#795548" stroke-width="1.5"/></svg><span><b>Arrivo a:</b> HIT / MISS nel gruppo</span></div>
+</div>
+
+<section>
+  <div class="lab"><em>Caso:</em> blocco 65 · 4096 blocchi → 64 gruppi da 2 posizioni</div>
+  <svg width="738" height="348" viewBox="0 0 738 348">
+    <text x="20" y="12" font-size="12" font-weight="700" fill="#795548">Memoria centrale</text>
+    <text x="470" y="12" font-size="12" font-weight="700" fill="#795548">Memoria cache</text>
+    <!-- blocks -->
+    <g font-size="12" text-anchor="middle">
+      <g id="m">
+        <rect x="20" y="22" width="84" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="62" y="39" fill="#795548">0</text>
+        <rect x="20" y="54" width="84" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="62" y="71" fill="#795548">1</text>
+        <text x="62" y="104" fill="#997E71">⋮</text>
+        <rect x="20" y="118" width="84" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="62" y="135" fill="#795548">63</text>
+        <rect x="20" y="150" width="84" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="62" y="167" fill="#795548">64</text>
+        <rect x="20" y="182" width="84" height="24" fill="#F2AA84" stroke="#FF654C" stroke-width="2.2"/><text x="62" y="199" fill="#795548" font-weight="700">65</text>
+        <text x="62" y="236" fill="#997E71">⋮</text>
+        <rect x="20" y="246" width="84" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="62" y="263" fill="#795548">127</text>
+        <rect x="20" y="278" width="84" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="62" y="295" fill="#795548">128</text>
+        <rect x="20" y="310" width="84" height="24" fill="#F2AA84" stroke="#FF654C" stroke-width="2.2" stroke-dasharray="0"/><text x="62" y="327" fill="#795548" font-weight="700">129</text>
+      </g>
+    </g>
+    <!-- links: gruppo 0 -->
+    <g fill="none" stroke="#C8B8B0" stroke-width="1.2" stroke-dasharray="4 3">
+      <path d="M104 34L462 54"/><path d="M104 162L462 54"/><path d="M104 290L462 54"/>
+      <path d="M104 130L462 274"/><path d="M104 258L462 274"/>
+    </g>
+    <!-- links: gruppo 1 (caso) -->
+    <g fill="none" stroke="#FF654C" stroke-width="1.5" stroke-dasharray="4 3">
+      <path d="M104 66L462 116"/><path d="M104 194L462 116" stroke-width="2.2"/><path d="M104 322L462 116"/>
+    </g>
+    <!-- cache groups -->
+    <g font-size="11" text-anchor="middle" fill="#795548">
+      <!-- gruppo 0 -->
+      <path d="M462 30Q456 30 456 36V72Q456 78 462 78" fill="none" stroke="#795548" stroke-width="1.5"/>
+      <rect x="470" y="30" width="46" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="493" y="46" fill="#997E71">tag</text>
+      <rect x="516" y="30" width="84" height="24" fill="#C8B8B0" stroke="#795548" stroke-width="1.5"/><text x="558" y="46">posiz. 0</text>
+      <rect x="470" y="54" width="46" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="493" y="70" fill="#997E71">tag</text>
+      <rect x="516" y="54" width="84" height="24" fill="#C8B8B0" stroke="#795548" stroke-width="1.5"/><text x="558" y="70">posiz. 1</text>
+      <text x="612" y="58" text-anchor="start" fill="#997E71">gruppo 0</text>
+      <!-- gruppo 1 -->
+      <path d="M462 92Q456 92 456 98V134Q456 140 462 140" fill="none" stroke="#FF654C" stroke-width="2.2"/>
+      <rect x="470" y="92" width="46" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="493" y="108" fill="#997E71">tag</text>
+      <rect x="516" y="92" width="84" height="24" fill="#F2AA84" stroke="#FF654C" stroke-width="2.2"/><text x="558" y="108" font-weight="700">posiz. 2</text>
+      <rect x="470" y="116" width="46" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="493" y="132" fill="#997E71">tag</text>
+      <rect x="516" y="116" width="84" height="24" fill="#F2AA84" stroke="#FF654C" stroke-width="2.2"/><text x="558" y="132" font-weight="700">posiz. 3</text>
+      <text x="612" y="120" text-anchor="start" font-weight="700" fill="#FF654C">gruppo 1</text>
+      <text x="535" y="180" fill="#997E71">⋮</text>
+      <!-- gruppo 63 -->
+      <path d="M462 250Q456 250 456 256V292Q456 298 462 298" fill="none" stroke="#795548" stroke-width="1.5"/>
+      <rect x="470" y="250" width="46" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="493" y="266" fill="#997E71">tag</text>
+      <rect x="516" y="250" width="84" height="24" fill="#C8B8B0" stroke="#795548" stroke-width="1.5"/><text x="558" y="266">posiz. 126</text>
+      <rect x="470" y="274" width="46" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="493" y="290" fill="#997E71">tag</text>
+      <rect x="516" y="274" width="84" height="24" fill="#C8B8B0" stroke="#795548" stroke-width="1.5"/><text x="558" y="290">posiz. 127</text>
+      <text x="612" y="278" text-anchor="start" fill="#997E71">gruppo 63</text>
+    </g>
+    <!-- annotations -->
+    <g font-size="11" fill="#795548">
+      <text x="200" y="26" fill="#997E71">0, 64, 128 → gruppo 0</text>
+      <text x="230" y="344" fill="#FF654C" font-weight="700">1, 65, 129 → gruppo 1 (a scelta posiz. 2 o 3)</text>
+      <text x="612" y="200" fill="#997E71">blocco → gruppo:</text>
+      <text x="612" y="216" fill="#795548" font-weight="700">65 mod 64 = 1</text>
+      <text x="612" y="236" fill="#997E71">tag = 65 ÷ 64 = 1</text>
+    </g>
+  </svg>
+
+  <div class="lab">Indirizzo di 16 bit — un esempio: parola 5 del blocco 65</div>
+  <div class="addr">
+    <div class="e"><b>000001</b><small>ETICHETTA · 6 bit<br>quale blocco del gruppo</small></div>
+    <div class="g"><b>000001</b><small>GRUPPO · 6 bit<br>2⁶ = 64 gruppi</small></div>
+    <div class="o"><b>0101</b><small>SPIAZZ. · 4 bit<br>parola nel blocco</small></div>
+  </div>
+  <svg width="738" height="46" viewBox="0 0 738 46">
+    <g fill="none" stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="4 3">
+      <path d="M130 2V34"/><path d="M122 27L130 36L138 27"/>
+      <path d="M382 2V34" stroke="#FF1F3C"/><path d="M374 27L382 36L390 27" stroke="#FF1F3C"/>
+    </g>
+    <text x="146" y="22" font-size="11" fill="#795548">confronta con i tag</text>
+    <text x="398" y="22" font-size="11" fill="#795548" font-weight="700">sceglie il gruppo 1</text>
+    <text x="620" y="22" font-size="11" fill="#997E71">sceglie la parola</text>
+  </svg>
+</section>
+
+<section>
+  <div class="lab"><em>Dentro il gruppo 1</em> — ricerca associativa solo su 2 tag</div>
+  <div class="row">
+    <div class="card">
+      <h3>Prima</h3>
+      <div class="pos"><span class="t">posiz. 2</span><i>000001</i><span class="no">tag salvato</span></div>
+      <div class="pos"><span class="t">posiz. 3</span><i>000010</i><span class="no">tag salvato</span></div>
+    </div>
+    <svg width="64" height="70" viewBox="0 0 64 70" style="align-self:center"><path d="M4 35H48M40 26L52 35L40 44" fill="none" stroke="#795548" stroke-width="1.5"/><text x="2" y="20" font-size="10" fill="#997E71">confronto</text><text x="2" y="62" font-size="10" fill="#997E71">000001 = ?</text></svg>
+    <div class="card" style="border-color:#FF654C">
+      <h3>Dopo</h3>
+      <div class="pos"><span class="t">posiz. 2</span><i class="ok">000001</i><span class="hit">= etichetta → HIT</span></div>
+      <div class="pos"><span class="t">posiz. 3</span><i>000010</i><span class="no">≠ scartata</span></div>
+    </div>
+  </div>
+
+  <div class="lab">Dove sta il caso: tre schemi, un solo parametro</div>
+  <div class="spec">
+    <div class="s"><b>Diretta</b>
+      <svg width="130" height="26"><g fill="#fff" stroke="#795548" stroke-width="1.2"><rect x="4" y="4" width="14" height="18"/><rect x="22" y="4" width="14" height="18"/><rect x="40" y="4" width="14" height="18"/><rect x="58" y="4" width="14" height="18"/><rect x="76" y="4" width="14" height="18"/><rect x="94" y="4" width="14" height="18"/><rect x="112" y="4" width="14" height="18"/></g></svg>
+      128 gruppi × 1 posizione</div>
+    <div class="s mid"><b>A gruppi</b>
+      <svg width="130" height="26"><g fill="#F2AA84" stroke="#FF654C" stroke-width="1.5"><rect x="4" y="4" width="26" height="18"/><rect x="38" y="4" width="26" height="18"/><rect x="72" y="4" width="26" height="18"/></g><g stroke="#795548" stroke-width="1"><path d="M17 4V22M51 4V22M85 4V22"/></g><text x="108" y="18" font-size="12" fill="#795548">…</text></svg>
+      64 gruppi × 2 posizioni</div>
+    <div class="s"><b>Associativa</b>
+      <svg width="130" height="26"><rect x="4" y="4" width="122" height="18" fill="#fff" stroke="#795548" stroke-width="1.5"/><g stroke="#795548" stroke-width="1"><path d="M22 4V22M40 4V22M58 4V22M76 4V22M94 4V22M112 4V22"/></g></svg>
+      1 gruppo × 128 posizioni</div>
+  </div>
+</section>
+
+<div class="res">
+  <div class="r">Gruppo = blocco mod 64<br>tag uguale in 1 delle 2 posizioni → HIT</div>
+  <div class="q">altrimenti MISS:<br>il blocco non è in cache<br>e va caricato in una delle 2 posizioni</div>
+</div>
+
+</body>
+</html>

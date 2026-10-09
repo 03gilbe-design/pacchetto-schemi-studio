@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Cache associativa a gruppi - schema</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#ddd}
+body{width:794px;height:1123px;overflow:hidden;background:#fffef8;font-family:"Segoe UI",Arial,sans-serif;color:#1f2a44;padding:22px 26px;display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:center;gap:12px;border-bottom:3px solid #2b4acb;padding-bottom:6px}
+header h1{font-size:23px;line-height:1.1}
+header h1 span{background:#fff176;padding:0 6px;border-radius:3px}
+.tag{margin-left:auto;font-size:12px;background:#2b4acb;color:#fff;padding:4px 9px;border-radius:12px;white-space:nowrap}
+.row{display:flex;gap:10px}
+.box{border:2px solid #2b4acb;border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.35;background:#fff}
+.box h2{font-size:13.5px;color:#2b4acb;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.box.g{border-color:#2e8b57}.box.g h2{color:#2e8b57}
+.box.o{border-color:#d9731a}.box.o h2{color:#d9731a}
+.box.r{border-color:#c2334d}.box.r h2{color:#c2334d}
+.grow{flex:1}
+b{color:#b3261e}
+.hl{background:#fff176;padding:0 2px}
+ul{padding-left:16px}li{margin:2px 0}
+.mid{display:flex;gap:10px;flex:1;min-height:0}
+.left{width:300px;display:flex;flex-direction:column;gap:8px}
+.fig{flex:1;border:2px solid #555;border-radius:10px;background:#fff;padding:4px;display:flex;flex-direction:column}
+.fig h2{font-size:13px;text-align:center;color:#444}
+.fig svg{flex:1;width:100%;min-height:0}
+.addr{display:flex;margin:6px 0 2px;font-weight:700;text-align:center;font-size:12.5px}
+.addr div{padding:6px 2px;border:2px solid #1f2a44}
+.addr .e{flex:6;background:#cfe3ff}.addr .gr{flex:6;background:#ffe0b8;border-left:0}.addr .s{flex:4;background:#d4f2dc;border-left:0}
+.scale{display:flex;font-size:10.5px;text-align:center;color:#555}
+.scale div:nth-child(1){flex:6}.scale div:nth-child(2){flex:6}.scale div:nth-child(3){flex:4}
+table{border-collapse:collapse;width:100%;font-size:12px;text-align:center}
+th,td{border:1.5px solid #2b4acb;padding:4px 3px}
+th{background:#dfe7ff}
+td:first-child{font-weight:700;text-align:left}
+footer{font-size:12px;background:#fff3cd;border:2px dashed #d9731a;border-radius:10px;padding:7px 10px;line-height:1.35}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>3) Indirizzamento <span>associativo a gruppi</span> (set-associative)</h1>
+  <div class="tag">CACHE · Fig. 8.18</div>
+</header>
+
+<div class="row">
+  <div class="box grow">
+    <h2>Idea</h2>
+    <b>Diretto + Associativo</b> insieme: le posizioni di cache sono riunite in <b>GRUPPI</b>.
+    Ogni blocco di memoria è legato a <b>un solo gruppo</b> (come nel diretto), ma dentro il gruppo può andare in <b>una qualsiasi posizione</b> (come nell'associativo).
+  </div>
+  <div class="box o" style="width:250px">
+    <h2>Perché</h2>
+    <ul>
+      <li>Meno <b>conflitti</b> del diretto</li>
+      <li><b>Costo circuitale</b> minore dell'associativo</li>
+    </ul>
+  </div>
+</div>
+
+<div class="mid">
+  <div class="left">
+    <div class="box g">
+      <h2>Relazione blocco → posizione</h2>
+      Blocco → gruppo = <b>funzione</b><br>
+      Blocco → posizione = <b>NON funzione</b> (il gruppo ha &gt;1 posizione: si sceglie)
+    </div>
+    <div class="box">
+      <h2>Esempio (Fig. 8.18)</h2>
+      <ul>
+        <li><b>64 gruppi</b> × <b>2 posizioni</b> = 128 posizioni</li>
+        <li>Memoria: <b>4.096 blocchi</b></li>
+        <li>Gruppo 0 ← blocchi <b>0, 64, 128 … 4.032</b> → posizione 0 <i>o</i> 1</li>
+        <li>Gruppo 1 ← blocchi <b>1, 65, 129 … 4.033</b> → posizione 2 <i>o</i> 3</li>
+        <li>Ogni gruppo ← 4.096/64 = <b>64 blocchi</b></li>
+      </ul>
+    </div>
+    <div class="box r">
+      <h2>Come si cerca il blocco</h2>
+      <ol style="padding-left:17px">
+        <li>Campo <b>gruppo</b> → individuo il gruppo</li>
+        <li>Confronto l'<b>etichetta</b> con quelle delle posizioni del gruppo (ricerca associativa)</li>
+        <li><span class="hl">Coincidenza</span> = copia trovata (HIT)<br>Nessuna = blocco <b>non in cache</b> (MISS)</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h2>Mappa: memoria centrale ⇄ cache a gruppi</h2>
+    <svg viewBox="0 0 440 470" font-family="Segoe UI,Arial" font-size="11">
+      <defs>
+        <marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#c2334d"/></marker>
+        <marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#2b4acb"/></marker>
+      </defs>
+      <text x="20" y="16" font-weight="700" fill="#2b4acb">MEMORIA CACHE</text>
+      <text x="300" y="16" font-weight="700" fill="#444">MEMORIA CENTRALE</text>
+
+      <!-- cache -->
+      <g stroke="#333" stroke-width="1.5">
+        <!-- gruppo 0 -->
+        <rect x="52" y="30" width="38" height="26" fill="#cfe3ff"/><rect x="90" y="30" width="80" height="26" fill="#fff"/>
+        <rect x="52" y="56" width="38" height="26" fill="#cfe3ff"/><rect x="90" y="56" width="80" height="26" fill="#fff"/>
+        <!-- gruppo 1 -->
+        <rect x="52" y="96" width="38" height="26" fill="#cfe3ff"/><rect x="90" y="96" width="80" height="26" fill="#fff"/>
+        <rect x="52" y="122" width="38" height="26" fill="#cfe3ff"/><rect x="90" y="122" width="80" height="26" fill="#fff"/>
+        <!-- gruppo 63 -->
+        <rect x="52" y="300" width="38" height="26" fill="#cfe3ff"/><rect x="90" y="300" width="80" height="26" fill="#fff"/>
+        <rect x="52" y="326" width="38" height="26" fill="#cfe3ff"/><rect x="90" y="326" width="80" height="26" fill="#fff"/>
+      </g>
+      <g font-size="9" text-anchor="middle">
+        <text x="71" y="47">Etich.</text><text x="71" y="73">Etich.</text><text x="71" y="113">Etich.</text><text x="71" y="139">Etich.</text><text x="71" y="317">Etich.</text><text x="71" y="343">Etich.</text>
+      </g>
+      <g font-size="10.5" text-anchor="middle">
+        <text x="130" y="47">Posizione 0</text><text x="130" y="73">Posizione 1</text>
+        <text x="130" y="113">Posizione 2</text><text x="130" y="139">Posizione 3</text>
+        <text x="130" y="317">Posizione 126</text><text x="130" y="343">Posizione 127</text>
+      </g>
+      <g stroke="#2e8b57" stroke-width="2" fill="none">
+        <path d="M46 32 Q38 43 46 54 M46 54 Q38 69 46 80" transform="translate(0,0)"/>
+        <path d="M46 98 Q38 123 46 146"/>
+        <path d="M46 302 Q38 327 46 350"/>
+      </g>
+      <g font-weight="700" fill="#2e8b57" text-anchor="end">
+        <text x="34" y="60">Gruppo 0</text><text x="34" y="126">Gruppo 1</text><text x="34" y="330">Gruppo 63</text>
+      </g>
+      <g stroke="#555" stroke-width="2"><path d="M110 160l6 6-6 6M130 160l6 6"/></g>
+      <text x="125" y="200" text-anchor="middle" font-size="18" fill="#555">⋮</text>
+      <text x="125" y="276" text-anchor="middle" font-size="18" fill="#555">⋮</text>
+
+      <!-- memoria -->
+      <g stroke="#333" stroke-width="1.5" fill="#fff">
+        <rect x="300" y="30" width="100" height="24" fill="#ffd9d9"/>
+        <rect x="300" y="58" width="100" height="24" fill="#d9e6ff"/>
+        <rect x="300" y="150" width="100" height="24" fill="#ffd9d9"/>
+        <rect x="300" y="178" width="100" height="24" fill="#d9e6ff"/>
+        <rect x="300" y="206" width="100" height="24"/>
+        <rect x="300" y="300" width="100" height="24" fill="#ffd9d9"/>
+        <rect x="300" y="328" width="100" height="24" fill="#d9e6ff"/>
+        <rect x="300" y="356" width="100" height="24"/>
+        <rect x="300" y="420" width="100" height="24"/>
+      </g>
+      <g font-size="11" text-anchor="middle">
+        <text x="350" y="46">Blocco 0</text><text x="350" y="74">Blocco 1</text>
+        <text x="350" y="166">Blocco 63</text><text x="350" y="194">Blocco 64</text><text x="350" y="222">Blocco 65</text>
+        <text x="350" y="316">Blocco 127</text><text x="350" y="344">Blocco 128</text><text x="350" y="372">Blocco 129</text>
+        <text x="350" y="436">Blocco 4.095</text>
+      </g>
+      <g font-size="18" fill="#555" text-anchor="middle"><text x="350" y="120">⋮</text><text x="350" y="260">⋮</text><text x="350" y="410">⋮</text></g>
+
+      <!-- frecce blocchi gruppo 0 (rossi) -> gruppo 0 -->
+      <g stroke="#c2334d" stroke-width="1.4" fill="none" marker-end="url(#a)" stroke-dasharray="4 3">
+        <path d="M300 42 L172 43"/><path d="M300 42 L172 69"/>
+        <path d="M300 162 L172 45"/><path d="M300 162 L172 71"/>
+        <path d="M300 312 L172 43"/><path d="M300 312 L172 71"/>
+      </g>
+      <!-- frecce blocchi gruppo 1 (blu) -> gruppo 1 -->
+      <g stroke="#2b4acb" stroke-width="1.4" fill="none" marker-end="url(#b)" stroke-dasharray="4 3">
+        <path d="M300 70 L172 109"/><path d="M300 70 L172 135"/>
+        <path d="M300 190 L172 111"/><path d="M300 190 L172 137"/>
+        <path d="M300 340 L172 109"/><path d="M300 340 L172 135"/>
+      </g>
+      <text x="215" y="250" font-size="10" fill="#555" text-anchor="middle">blocco n → gruppo (n mod 64)</text>
+
+      <!-- campi indirizzo -->
+      <text x="150" y="386" font-size="11" font-weight="700" text-anchor="middle" fill="#444">Campi di indirizzo (16 bit)</text>
+      <g stroke="#333" stroke-width="1.5" font-size="12" text-anchor="middle" font-weight="700">
+        <rect x="20" y="394" width="100" height="26" fill="#cfe3ff"/><text x="70" y="412" stroke="none">6 Etichetta</text>
+        <rect x="120" y="394" width="100" height="26" fill="#ffe0b8"/><text x="170" y="412" stroke="none">6 Gruppo</text>
+        <rect x="220" y="394" width="66" height="26" fill="#d4f2dc"/><text x="253" y="412" stroke="none">4 Spiazz.</text>
+      </g>
+      <text x="150" y="450" font-size="10" fill="#555" text-anchor="middle">Legenda: celeste=etichetta · rosso=blocchi gruppo 0 · blu=blocchi gruppo 1</text>
+    </svg>
+  </div>
+</div>
+
+<div class="row">
+  <div class="box grow">
+    <h2>Indirizzo di memoria</h2>
+    <div class="addr"><div class="e">6 bit ETICHETTA</div><div class="gr">6 bit GRUPPO</div><div class="s">4 bit OFFSET</div></div>
+    <div class="scale"><div>quale blocco del gruppo</div><div>quale gruppo (2⁶=64)</div><div>parola nel blocco</div></div>
+    <ul style="margin-top:5px">
+      <li><b>Etichetta</b> = n − spiazzamento − gruppo = 16 − 4 − 6 = 6 bit (64 blocchi per gruppo)</li>
+      <li><b>Gruppo</b> = ⌈log₂(# gruppi)⌉ = 6 bit &nbsp;·&nbsp; <b>Spiazz.</b> = ⌈log₂ b⌉ = 4 bit</li>
+    </ul>
+  </div>
+  <div class="box" style="width:300px">
+    <h2>Formule (legenda)</h2>
+    <ul>
+      <li># blocchi = 2<sup>n</sup>/b</li>
+      <li># posizioni = 2<sup>m</sup>/b</li>
+      <li># gruppi = # posizioni / v</li>
+      <li>v = posizioni per gruppo (= # vie)</li>
+    </ul>
+  </div>
+</div>
+
+<table>
+  <tr><th>Schema</th><th>N° gruppi</th><th>Posizioni per gruppo</th><th>Ricerca</th><th>Conflitti</th></tr>
+  <tr><td>Diretto</td><td>= n° posizioni</td><td>1</td><td>1 sola etichetta</td><td>Molti</td></tr>
+  <tr style="background:#fff9d6"><td>A gruppi</td><td>es. 64</td><td>es. 2</td><td>poche etichette (poco costosa)</td><td>Ridotti</td></tr>
+  <tr><td>Associativo</td><td>1</td><td>tutte</td><td>tutte le etichette</td><td>Pochi, ma costo alto</td></tr>
+</table>
+
+<footer>
+  <b>Da ricordare:</b> l'associativo a gruppi è lo schema <b>più generale</b>. Caso limite 1 = <b>un solo gruppo con tutte le posizioni</b> → associativo. Caso limite 2 = <b>tanti gruppi quante le posizioni</b> (1 posizione ciascuno) → diretto.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><title>Indirizzamento associativo a gruppi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#FAF6EF}
+body{width:794px;height:1123px;overflow:hidden;background:#FAF6EF;color:#997E71;font-family:"Segoe UI",Helvetica,Arial,sans-serif;font-size:12px;display:flex;flex-direction:column}
+.hand{font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive}
+.band{background:#FF654C;padding:16px 34px 14px;color:#fff;display:flex;flex-direction:column;gap:8px}
+.band h1{font-size:30px;font-weight:400;line-height:1.1}
+.ctx{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.ctx span{background:#fff;color:#795548;padding:3px 10px;border-radius:12px;font-weight:600}
+.ctx svg{flex:none}
+main{flex:1;padding:14px 34px 18px;display:flex;flex-direction:column;gap:14px}
+.sec{display:flex;flex-direction:column;gap:6px}
+.lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#997E71}
+.row{display:flex;gap:14px;align-items:stretch}
+.zoom{flex:1;border:1.5px dashed #2BBFCF;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.zoom b{color:#795548}
+.line{display:flex;align-items:center;gap:6px}
+.box{background:#fff;border:1.5px solid #795548;border-radius:3px;padding:3px 7px;color:#795548;font-weight:600;white-space:nowrap}
+.e{background:#C2D9E5}.g{background:#F2AA84}.s{background:#C8B8B0}
+.ok{color:#FF654C;font-weight:700}
+.bar{display:flex;height:44px;border:1.5px solid #795548}
+.bar div{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#795548;font-weight:600;border-right:1.5px solid #795548}
+.bar div:last-child{border:0}
+.bar small{font-weight:400;font-size:10.5px;color:#795548}
+.nums{display:flex;gap:14px}
+.nums p{flex:1;font-size:11.5px;line-height:1.35}
+.res{margin-top:auto;border-top:2.2px solid #FF654C;padding-top:8px;display:flex;align-items:center;gap:14px}
+.res .hand{color:#FF654C;font-size:21px;line-height:1.25}
+.res small{font-size:11px;color:#997E71}
+</style></head><body>
+
+<div class="band">
+  <h1 class="hand">Indirizzamento associativo a gruppi</h1>
+  <div class="ctx"><span>indirizzo di memoria</span>
+    <svg width="60" height="10"><path d="M2 5H52" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M48 1L56 5L48 9" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
+    <span>1 gruppo + 1 posizione di CACHE</span></div>
+</div>
+
+<main>
+
+<div class="sec">
+  <div class="lab">Caso piccolo · 8 blocchi, 4 gruppi da 2 posizioni · si segue il blocco 5</div>
+  <div class="row">
+  <svg width="500" height="290" viewBox="0 0 500 290" font-family="Segoe UI,Arial,sans-serif" font-size="11">
+    <text x="20" y="16" fill="#795548" font-weight="600">Memoria</text>
+    <text x="300" y="16" fill="#795548" font-weight="600">CACHE</text>
+    <!-- linee leggere: ogni blocco verso il suo gruppo -->
+    <g stroke="#C8B8B0" stroke-width="1" stroke-dasharray="4 3" fill="none">
+      <path d="M100 47L300 47M100 47L300 77"/>
+      <path d="M100 77L300 107M100 77L300 137"/>
+      <path d="M100 107L300 167M100 107L300 197"/>
+      <path d="M100 137L300 227M100 137L300 257"/>
+      <path d="M100 167L300 47M100 167L300 77"/>
+      <path d="M100 227L300 167M100 227L300 197"/>
+      <path d="M100 257L300 227M100 257L300 257"/>
+    </g>
+    <!-- blocco 1 -> gruppo 1 -->
+    <g stroke="#F2AA84" stroke-width="1.5" stroke-dasharray="4 3"><path d="M100 77L300 107M100 77L300 137"/></g>
+    <!-- blocco 5 -> gruppo 1 : caso seguito -->
+    <g stroke="#FF654C" stroke-width="2.2" fill="none"><path d="M100 197L300 107"/><path d="M100 197L300 137"/></g>
+    <!-- memoria: riga i a y=35+i*30 -->
+    <g stroke="#795548" stroke-width="1.5">
+      <rect x="20" y="35" width="80" height="24" fill="#fff"/>
+      <rect x="20" y="65" width="80" height="24" fill="#F2AA84"/>
+      <rect x="20" y="95" width="80" height="24" fill="#fff"/>
+      <rect x="20" y="125" width="80" height="24" fill="#fff"/>
+      <rect x="20" y="155" width="80" height="24" fill="#fff"/>
+      <rect x="20" y="185" width="80" height="24" fill="#FF654C"/>
+      <rect x="20" y="215" width="80" height="24" fill="#fff"/>
+      <rect x="20" y="245" width="80" height="24" fill="#fff"/>
+    </g>
+    <g fill="#795548" text-anchor="middle" font-weight="600">
+      <text x="60" y="51">Blocco 0</text><text x="60" y="81">Blocco 1</text><text x="60" y="111">Blocco 2</text><text x="60" y="141">Blocco 3</text>
+      <text x="60" y="171">Blocco 4</text><text x="60" y="231">Blocco 6</text><text x="60" y="261">Blocco 7</text>
+    </g>
+    <text x="60" y="201" fill="#fff" text-anchor="middle" font-weight="700">Blocco 5</text>
+    <!-- cache: posizioni p=0..7, gruppo g=p/2 -->
+    <g stroke="#795548" stroke-width="1.5">
+      <g fill="#C2D9E5"><rect x="300" y="35" width="50" height="24"/><rect x="300" y="65" width="50" height="24"/><rect x="300" y="95" width="50" height="24"/><rect x="300" y="125" width="50" height="24"/><rect x="300" y="155" width="50" height="24"/><rect x="300" y="185" width="50" height="24"/><rect x="300" y="215" width="50" height="24"/><rect x="300" y="245" width="50" height="24"/></g>
+      <g fill="#fff"><rect x="350" y="35" width="80" height="24"/><rect x="350" y="65" width="80" height="24"/><rect x="350" y="95" width="80" height="24"/><rect x="350" y="125" width="80" height="24"/><rect x="350" y="155" width="80" height="24"/><rect x="350" y="185" width="80" height="24"/><rect x="350" y="215" width="80" height="24"/><rect x="350" y="245" width="80" height="24"/></g>
+    </g>
+    <!-- gruppo 1 in evidenza -->
+    <rect x="296" y="92" width="138" height="60" rx="4" fill="none" stroke="#FF654C" stroke-width="2.2"/>
+    <g fill="#795548" font-weight="600">
+      <text x="325" y="51" text-anchor="middle">Etich.</text><text x="325" y="81" text-anchor="middle">Etich.</text><text x="325" y="111" text-anchor="middle">Etich.</text><text x="325" y="141" text-anchor="middle">Etich.</text>
+      <text x="325" y="171" text-anchor="middle">Etich.</text><text x="325" y="201" text-anchor="middle">Etich.</text><text x="325" y="231" text-anchor="middle">Etich.</text><text x="325" y="261" text-anchor="middle">Etich.</text>
+      <text x="390" y="51" text-anchor="middle">Pos. 0</text><text x="390" y="81" text-anchor="middle">Pos. 1</text><text x="390" y="111" text-anchor="middle">Pos. 2</text><text x="390" y="141" text-anchor="middle">Pos. 3</text>
+      <text x="390" y="171" text-anchor="middle">Pos. 4</text><text x="390" y="201" text-anchor="middle">Pos. 5</text><text x="390" y="231" text-anchor="middle">Pos. 6</text><text x="390" y="261" text-anchor="middle">Pos. 7</text>
+    </g>
+    <!-- parentesi dei gruppi -->
+    <g stroke="#F2AA84" stroke-width="2.2" fill="none">
+      <path d="M440 37Q448 37 448 45V50Q448 59 440 59"/><path d="M440 67Q448 67 448 75V80Q448 89 440 89"/>
+    </g>
+    <g stroke="#795548" stroke-width="1.5" fill="none">
+      <path d="M440 37V89"/><path d="M440 97V149"/><path d="M440 157V209"/><path d="M440 217V269"/>
+    </g>
+    <g fill="#795548" font-weight="600">
+      <rect x="452" y="50" width="42" height="18" rx="9" fill="#F2AA84"/><text x="473" y="63" text-anchor="middle">Gr. 0</text>
+      <rect x="452" y="110" width="42" height="18" rx="9" fill="#FF654C"/><text x="473" y="123" text-anchor="middle" fill="#fff">Gr. 1</text>
+      <rect x="452" y="170" width="42" height="18" rx="9" fill="#F2AA84"/><text x="473" y="183" text-anchor="middle">Gr. 2</text>
+      <rect x="452" y="230" width="42" height="18" rx="9" fill="#F2AA84"/><text x="473" y="243" text-anchor="middle">Gr. 3</text>
+    </g>
+  </svg>
+
+  <div class="zoom">
+    <b>Zoom · dentro il gruppo 1</b>
+    <div class="line"><span class="box">5 = 1·4 + 1</span></div>
+    <div class="line"><span class="box e">etich. 1</span><span class="box g">gruppo 1</span></div>
+    <svg width="220" height="16"><path d="M110 1V12" stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M105 8L110 14L115 8" fill="none" stroke="#2BBFCF" stroke-width="1.5"/></svg>
+    <div class="line"><span class="box e">etich. 0</span><span class="box">Pos. 2</span><span>≠ 1</span><span style="color:#997E71">✗</span></div>
+    <div class="line"><span class="box e">etich. 1</span><span class="box">Pos. 3</span><span class="ok">= 1 ✓ trovato</span></div>
+    <span style="font-size:11px">Si confrontano solo le 2 etichette del gruppo.</span>
+  </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="lab">Dove sta nella famiglia · 8 posizioni totali</div>
+  <svg width="726" height="150" viewBox="0 0 726 150" font-family="Segoe UI,Arial,sans-serif" font-size="11">
+    <g stroke="#795548" stroke-width="1.5">
+      <!-- diretta: 8 gruppi da 1 -->
+      <g fill="#fff">
+        <rect x="40" y="10" width="40" height="11"/><rect x="40" y="25" width="40" height="11"/><rect x="40" y="40" width="40" height="11"/><rect x="40" y="55" width="40" height="11"/>
+        <rect x="40" y="70" width="40" height="11"/><rect x="40" y="85" width="40" height="11"/><rect x="40" y="100" width="40" height="11"/><rect x="40" y="115" width="40" height="11"/>
+      </g>
+      <!-- a gruppi: 4 gruppi da 2 -->
+      <g fill="#F2AA84">
+        <rect x="320" y="10" width="40" height="11"/><rect x="320" y="21" width="40" height="11"/>
+        <rect x="320" y="40" width="40" height="11"/><rect x="320" y="51" width="40" height="11"/>
+        <rect x="320" y="70" width="40" height="11"/><rect x="320" y="81" width="40" height="11"/>
+        <rect x="320" y="100" width="40" height="11"/><rect x="320" y="111" width="40" height="11"/>
+      </g>
+      <!-- associativa: 1 gruppo da 8 -->
+      <g fill="#fff">
+        <rect x="600" y="10" width="40" height="11"/><rect x="600" y="21" width="40" height="11"/><rect x="600" y="32" width="40" height="11"/><rect x="600" y="43" width="40" height="11"/>
+        <rect x="600" y="54" width="40" height="11"/><rect x="600" y="65" width="40" height="11"/><rect x="600" y="76" width="40" height="11"/><rect x="600" y="87" width="40" height="11"/>
+      </g>
+    </g>
+    <rect x="316" y="6" width="48" height="124" rx="5" fill="none" stroke="#FF654C" stroke-width="2.2"/>
+    <g stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+      <path d="M92 70H230"/><path d="M238 66L246 70L238 74" />
+    </g>
+    <path d="M300 70H92" stroke="none"/>
+    <g stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+      <path d="M375 70H460"/><path d="M452 66L460 70L452 74"/>
+    </g>
+    <g fill="#795548" font-weight="600" text-anchor="middle">
+      <text x="60" y="144">Diretta</text><text x="340" y="144" fill="#FF654C">A gruppi</text><text x="620" y="144">Associativa</text>
+    </g>
+    <g fill="#997E71" font-size="10.5">
+      <text x="95" y="30">8 gruppi · 1 posiz.</text><text x="95" y="44">caso limite</text><text x="95" y="58">confronto: 1 etichetta</text>
+      <text x="375" y="30">4 gruppi · 2 posiz.</text><text x="375" y="44">confronto: 2 etichette</text>
+      <text x="470" y="100">1 gruppo · 8 posiz.</text><text x="470" y="114">caso limite</text><text x="470" y="128">confronto: tutte</text>
+    </g>
+  </svg>
+</div>
+
+<div class="sec">
+  <div class="lab">Numeri del prof · 4096 blocchi, 64 gruppi da 2 posizioni</div>
+  <div class="bar">
+    <div class="e" style="flex:6">6 bit<small>etichetta</small></div>
+    <div class="g" style="flex:6">6 bit<small>gruppo</small></div>
+    <div class="s" style="flex:4">4 bit<small>spiazzamento</small></div>
+  </div>
+  <div class="nums">
+    <p style="flex:6"><b style="color:#795548">4096 / 64 = 64</b> blocchi per gruppo → 6 bit per distinguerli</p>
+    <p style="flex:6"><b style="color:#795548">64 gruppi</b> = 2⁶ → 6 bit; blocco n → gruppo n mod 64 (0, 64, 128… → gr. 0)</p>
+    <p style="flex:4">parola dentro il blocco</p>
+  </div>
+  <div style="font-size:11px">⌈log₂ b⌉ = spiazz. · ⌈log₂ #gruppi⌉ = gruppo · etichetta = n − spiazz. − gruppo</div>
+</div>
+
+<div class="res">
+  <div class="hand">gruppo = 1 sola scelta<br>posizione = 1 su 2</div>
+  <small>blocco → gruppo: funzione · blocco → posizione: no (il gruppo ha più posizioni)</small>
+</div>
+
+</main>
+</body></html>

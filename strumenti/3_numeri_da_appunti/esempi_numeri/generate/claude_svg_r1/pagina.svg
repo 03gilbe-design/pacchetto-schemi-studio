@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="794" height="1123" viewBox="0 0 794 1123">
+<rect width="794" height="1123" fill="#FAF6EF"/>
+<rect width="794" height="64" fill="#FF654C"/>
+<text x="36" y="42" font-family="Segoe Print, Comic Sans MS, cursive" font-size="27" fill="#FFFFFF">Cache associativa a gruppi</text>
+<text x="758" y="42" text-anchor="end" font-family="Arial, sans-serif" font-size="12" fill="#FFFFFF">8.18</text>
+<g font-family="Arial, sans-serif" fill="#997E71" font-size="12">
+<text x="36" y="88">Si parte da: un blocco della memoria centrale</text>
+<text x="758" y="88" text-anchor="end">Si arriva a: una posizione a scelta nel suo gruppo</text>
+<path d="M330 83 H 360" stroke="#997E71" stroke-width="1.5" fill="none"/>
+</g>
+<!-- A: mappa -->
+<g font-family="Arial, sans-serif" font-size="12" stroke="#795548" stroke-width="1.5">
+<text x="50" y="118" fill="#795548" stroke="none" font-weight="bold">Memoria centrale · 4096 blocchi</text>
+<text x="300" y="118" fill="#795548" stroke="none" font-weight="bold">Cache · 64 gruppi × 2 posizioni</text>
+<!-- blocchi -->
+<rect x="50" y="130" width="110" height="26" fill="#fff"/><text x="105" y="148" text-anchor="middle" fill="#997E71" stroke="none">Blocco 0</text>
+<rect x="50" y="160" width="110" height="26" fill="#F2AA84"/><text x="105" y="178" text-anchor="middle" fill="#795548" stroke="none">Blocco 1</text>
+<rect x="50" y="190" width="110" height="26" fill="#fff"/><text x="105" y="208" text-anchor="middle" fill="#997E71" stroke="none">Blocco 64</text>
+<rect x="50" y="220" width="110" height="28" fill="#FF654C" stroke-width="2.5"/><text x="105" y="239" text-anchor="middle" fill="#fff" stroke="none" font-weight="bold">Blocco 65</text>
+<rect x="50" y="252" width="110" height="26" fill="#fff"/><text x="105" y="270" text-anchor="middle" fill="#997E71" stroke="none">Blocco 128</text>
+<rect x="50" y="282" width="110" height="26" fill="#F2AA84"/><text x="105" y="300" text-anchor="middle" fill="#795548" stroke="none">Blocco 129</text>
+<text x="105" y="328" text-anchor="middle" fill="#997E71" stroke="none" font-size="16">⋮</text>
+<rect x="50" y="338" width="110" height="26" fill="#fff"/><text x="105" y="356" text-anchor="middle" fill="#997E71" stroke="none">Blocco 4095</text>
+<!-- gruppi -->
+<text x="278" y="161" text-anchor="end" fill="#795548" stroke="none">Gruppo 0</text>
+<path d="M286 135 q-8 0 -8 8 v 30 q 0 8 8 8" fill="none" transform="translate(-6,-4)"/>
+<rect x="300" y="130" width="46" height="24" fill="#fff"/><rect x="346" y="130" width="84" height="24" fill="#C8B8B0"/>
+<rect x="300" y="156" width="46" height="24" fill="#fff"/><rect x="346" y="156" width="84" height="24" fill="#C8B8B0"/>
+<text x="323" y="146" text-anchor="middle" fill="#997E71" stroke="none" font-size="10">etich.</text><text x="388" y="146" text-anchor="middle" fill="#795548" stroke="none">Posiz. 0</text>
+<text x="323" y="172" text-anchor="middle" fill="#997E71" stroke="none" font-size="10">etich.</text><text x="388" y="172" text-anchor="middle" fill="#795548" stroke="none">Posiz. 1</text>
+<text x="278" y="221" text-anchor="end" fill="#FF654C" stroke="none" font-weight="bold">Gruppo 1</text>
+<rect x="300" y="190" width="46" height="24" fill="#fff"/><rect x="346" y="190" width="84" height="24" fill="#F2AA84"/>
+<rect x="300" y="216" width="46" height="24" fill="#fff"/><rect x="346" y="216" width="84" height="24" fill="#F2AA84"/>
+<text x="323" y="206" text-anchor="middle" fill="#997E71" stroke="none" font-size="10">etich.</text><text x="388" y="206" text-anchor="middle" fill="#795548" stroke="none">Posiz. 2</text>
+<text x="323" y="232" text-anchor="middle" fill="#997E71" stroke="none" font-size="10">etich.</text><text x="388" y="232" text-anchor="middle" fill="#795548" stroke="none">Posiz. 3</text>
+<text x="365" y="268" text-anchor="middle" fill="#997E71" stroke="none" font-size="16">⋮</text>
+<text x="278" y="321" text-anchor="end" fill="#795548" stroke="none">Gruppo 63</text>
+<rect x="300" y="290" width="46" height="24" fill="#fff"/><rect x="346" y="290" width="84" height="24" fill="#C8B8B0"/>
+<rect x="300" y="316" width="46" height="24" fill="#fff"/><rect x="346" y="316" width="84" height="24" fill="#C8B8B0"/>
+<text x="388" y="306" text-anchor="middle" fill="#795548" stroke="none">Posiz. 126</text>
+<text x="388" y="332" text-anchor="middle" fill="#795548" stroke="none">Posiz. 127</text>
+</g>
+<!-- collegamenti -->
+<g fill="none" stroke-dasharray="5 4" stroke-width="1.2" stroke="#997E71">
+<path d="M160 143 L296 155"/><path d="M160 203 L296 158"/><path d="M160 265 L296 162"/>
+<path d="M160 173 L296 205"/><path d="M160 295 L296 212"/>
+<path d="M160 351 L296 305"/>
+</g>
+<path d="M160 234 L296 215" fill="none" stroke="#FF654C" stroke-width="2.6"/>
+<!-- regola -->
+<g font-family="Arial, sans-serif" font-size="12" fill="#795548">
+<text x="470" y="150" font-weight="bold">Il blocco 65 ricade nel gruppo 1</text>
+<text x="470" y="168" fill="#997E71">i gruppi si ripetono ogni 64 blocchi:</text>
+<rect x="470" y="180" width="64" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="502" y="197" text-anchor="middle" fill="#997E71">0 … 63</text>
+<rect x="470" y="208" width="64" height="24" fill="#fff" stroke="#795548" stroke-width="1.5"/><text x="502" y="225" text-anchor="middle" fill="#997E71">64 … 127</text>
+<text x="540" y="197" fill="#997E71" font-size="11">giro 0</text><text x="540" y="225" fill="#997E71" font-size="11">giro 1</text>
+<rect x="470" y="236" width="64" height="24" fill="#F2AA84" stroke="#795548" stroke-width="1.5"/><text x="502" y="253" text-anchor="middle">1 → 65</text>
+<text x="545" y="253" font-size="11" fill="#997E71">posto 1 del giro 1</text>
+<text x="470" y="292" font-weight="bold">65 = 1 × 64 + 1</text>
+<text x="470" y="310" fill="#FF654C" font-weight="bold">etichetta 1 · gruppo 1</text>
+<text x="470" y="334" fill="#997E71" font-size="11">gruppo = blocco mod 64</text>
+<text x="470" y="350" fill="#997E71" font-size="11">etichetta = blocco div 64</text>
+</g>
+<!-- B: indirizzo -->
+<g font-family="Arial, sans-serif" font-size="12" fill="#795548">
+<text x="60" y="412" font-weight="bold">Indirizzo di memoria · 16 bit</text>
+<text x="230" y="412" fill="#997E71">caso: parola nel blocco 65</text>
+<g stroke="#795548" stroke-width="1.5">
+<rect x="60" y="424" width="252" height="40" fill="#fff"/>
+<rect x="312" y="424" width="252" height="40" fill="#F2AA84"/>
+<rect x="564" y="424" width="168" height="40" fill="#fff"/>
+</g>
+<g font-size="16" text-anchor="middle" letter-spacing="3">
+<text x="186" y="450">000001</text><text x="438" y="450" fill="#FF654C" font-weight="bold">000001</text><text x="648" y="450" fill="#997E71">xxxx</text>
+</g>
+<g text-anchor="middle" font-weight="bold">
+<text x="186" y="486">Etichetta · 6 bit</text><text x="438" y="486">Gruppo · 6 bit</text><text x="648" y="486">Spiazz. · 4 bit</text>
+</g>
+<g text-anchor="middle" fill="#997E71" font-size="11">
+<text x="186" y="502">quale blocco del gruppo</text><text x="438" y="502">in quale gruppo cercare</text><text x="648" y="502">quale parola nel blocco</text>
+</g>
+<path d="M438 508 V 538" stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+<path d="M186 508 V 538" stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+<path d="M432 532 l6 8 l6 -8" stroke="#2BBFCF" stroke-width="1.5" fill="none"/>
+<path d="M180 532 l6 8 l6 -8" stroke="#2BBFCF" stroke-width="1.5" fill="none"/>
+</g>
+<!-- C: zoom -->
+<g font-family="Arial, sans-serif" font-size="12" fill="#795548" stroke="#795548" stroke-width="1.5">
+<path d="M60 548 H 732 V 700 H 60 Z" fill="none" stroke="#C8B8B0" stroke-dasharray="3 4"/>
+<text x="72" y="568" stroke="none" font-weight="bold">Zoom · dentro il gruppo 1</text>
+<text x="72" y="584" stroke="none" fill="#997E71" font-size="11">ricerca associativa tra 2 sole etichette</text>
+<rect x="72" y="610" width="96" height="40" fill="#fff" stroke="#FF654C" stroke-width="2.5"/>
+<text x="120" y="626" text-anchor="middle" stroke="none" font-size="10" fill="#997E71">etichetta cercata</text>
+<text x="120" y="643" text-anchor="middle" stroke="none" fill="#FF654C" font-weight="bold">000001</text>
+<rect x="330" y="580" width="90" height="30" fill="#fff"/><text x="375" y="599" text-anchor="middle" stroke="none">000000</text>
+<rect x="420" y="580" width="110" height="30" fill="#F2AA84"/><text x="475" y="599" text-anchor="middle" stroke="none">Posizione 2</text>
+<rect x="330" y="640" width="90" height="30" fill="#fff" stroke="#FF654C" stroke-width="2.5"/><text x="375" y="659" text-anchor="middle" stroke="none">000001</text>
+<rect x="420" y="640" width="110" height="30" fill="#F2AA84" stroke="#FF654C" stroke-width="2.5"/><text x="475" y="659" text-anchor="middle" stroke="none">Posizione 3</text>
+<path d="M168 622 L 326 596" fill="none" stroke="#2BBFCF" stroke-dasharray="5 4"/>
+<path d="M168 638 L 326 655" fill="none" stroke="#2BBFCF" stroke-dasharray="5 4"/>
+<text x="250" y="600" stroke="none" font-size="16" fill="#997E71">≠</text>
+<text x="250" y="664" stroke="none" font-size="18" fill="#FF654C" font-weight="bold">=</text>
+<text x="550" y="599" stroke="none" fill="#997E71">nessuna coincidenza</text>
+<text x="550" y="659" stroke="none" fill="#795548" font-weight="bold">coincidenza: copia qui</text>
+<text x="550" y="676" stroke="none" fill="#997E71" font-size="11">nessuna in tutto il gruppo = non in cache</text>
+</g>
+<!-- D: spettro -->
+<g font-family="Arial, sans-serif" font-size="12" fill="#795548">
+<text x="60" y="734" font-weight="bold">Il più generale: i due schemi sono i casi limite</text>
+<g stroke="#795548" stroke-width="1.5">
+<!-- diretto -->
+<g fill="#fff">
+<rect x="70" y="760" width="32" height="32"/><rect x="108" y="760" width="32" height="32"/><rect x="146" y="760" width="32" height="32"/><rect x="184" y="760" width="32" height="32"/>
+</g>
+<!-- gruppi -->
+<rect x="316" y="754" width="76" height="44" fill="#F2AA84" stroke-width="2.2"/><rect x="400" y="754" width="76" height="44" fill="#F2AA84" stroke-width="2.2"/>
+<g fill="#fff"><rect x="322" y="760" width="32" height="32"/><rect x="354" y="760" width="32" height="32"/><rect x="406" y="760" width="32" height="32"/><rect x="438" y="760" width="32" height="32"/></g>
+<!-- associativo -->
+<rect x="560" y="754" width="176" height="44" fill="#C2D9E5"/>
+<g fill="#fff"><rect x="566" y="760" width="32" height="32"/><rect x="604" y="760" width="32" height="32"/><rect x="642" y="760" width="32" height="32"/><rect x="680" y="760" width="32" height="32"/></g>
+</g>
+<g text-anchor="middle" font-weight="bold">
+<text x="143" y="822">Diretto</text><text x="396" y="822" fill="#FF654C">A gruppi</text><text x="648" y="822">Associativo</text>
+</g>
+<g text-anchor="middle" fill="#997E71" font-size="11">
+<text x="143" y="838">128 gruppi × 1 posizione</text><text x="396" y="838">64 gruppi × 2 posizioni</text><text x="648" y="838">1 gruppo × 128 posizioni</text>
+<text x="143" y="854">molti conflitti · costo basso</text><text x="396" y="854">conflitti ridotti · costo ridotto</text><text x="648" y="854">pochi conflitti · costo alto</text>
+</g>
+</g>
+<!-- risultato -->
+<g>
+<path d="M60 900 H 732" stroke="#C8B8B0" stroke-width="1.5" stroke-dasharray="3 4"/>
+<text x="397" y="940" text-anchor="middle" font-family="Segoe Print, Comic Sans MS, cursive" font-size="22" fill="#FF654C">Blocco 65 → gruppo 1 → posizione 2 o 3</text>
+<text x="397" y="976" text-anchor="middle" font-family="Segoe Print, Comic Sans MS, cursive" font-size="20" fill="#FF654C">etichetta 000001 trovata nella posizione 3</text>
+<path d="M150 988 q 247 10 494 0" stroke="#FF654C" stroke-width="2.5" fill="none"/>
+</g>
+</svg>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Annota i miei schemi</title>
+<style>
+  :root { --sfondo:#FAF9F5; --inchiostro:#141413; --accento:#D97757; --sabbia:#E3DACC; --tenue:#997E71; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Aptos,"Segoe UI",system-ui,sans-serif; background:var(--sfondo); color:var(--inchiostro); }
+  header { display:flex; gap:12px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--sabbia); position:sticky; top:0; background:var(--sfondo); z-index:5; flex-wrap:wrap; }
+  select,button,input,textarea { font:inherit; }
+  button { background:var(--accento); color:#fff; border:0; border-radius:8px; padding:7px 12px; cursor:pointer; }
+  button.chiaro { background:var(--sabbia); color:var(--inchiostro); }
+  main { display:grid; grid-template-columns:var(--c1,1.35fr) 6px var(--c2,1fr) 6px var(--c3,.62fr); gap:0; height:calc(100vh - 53px); }
+  .maniglia { background:var(--sabbia); cursor:col-resize; }
+  .maniglia:hover { background:var(--accento); }
+  #sx { overflow:auto; padding:10px; border-right:1px solid var(--sabbia); }
+  #mid { overflow:auto; padding:10px; border-right:1px solid var(--sabbia); background:#fff; }
+  #mid h3 { margin:0 0 8px; font-size:13px; color:var(--tenue); font-weight:600; }
+  #mid img { width:100%; display:block; border:1px solid var(--sabbia); border-radius:6px; }
+  #misure { display:flex; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+  .mis { flex:1; min-width:120px; background:var(--sfondo); border-radius:8px; padding:6px 9px; }
+  .mis b { display:block; font-size:22px; color:var(--accento); line-height:1.1; }
+  .mis span { font-size:11px; color:var(--tenue); }
+  .barra { height:6px; background:var(--sabbia); border-radius:3px; margin-top:4px; overflow:hidden; }
+  .barra i { display:block; height:100%; background:var(--accento); }
+  #tela { position:relative; display:inline-block; }
+  #tela img { display:block; max-width:100%; user-select:none; -webkit-user-drag:none; }
+  .area { position:absolute; border:2px solid var(--accento); background:rgba(217,119,87,.14); cursor:pointer; }
+  .area.sel { border-color:#141413; background:rgba(20,20,19,.12); }
+  .area b { position:absolute; top:-11px; left:-11px; width:22px; height:22px; border-radius:50%; background:var(--accento); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; }
+  #dx { overflow:auto; padding:12px 14px; }
+  .nota { border-left:4px solid var(--sabbia); padding:8px 10px; margin-bottom:10px; background:#fff; border-radius:0 8px 8px 0; }
+  .nota.sel { border-left-color:var(--accento); }
+  .nota h4 { margin:0 0 6px; font-size:14px; display:flex; justify-content:space-between; gap:8px; }
+  .nota textarea { width:100%; min-height:58px; border:1px solid var(--sabbia); border-radius:6px; padding:6px; resize:vertical; }
+  .campi { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px; }
+  .campi label { font-size:12px; color:var(--tenue); display:flex; gap:4px; align-items:center; }
+  .vuoto { color:var(--tenue); }
+  #stato { font-size:13px; color:var(--tenue); margin-left:auto; }
+  kbd { background:var(--sabbia); border-radius:4px; padding:1px 5px; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <button class="chiaro" id="prec">◀</button>
+  <select id="pagina"></select>
+  <button class="chiaro" id="succ">▶</button>
+  <button id="salva">Salva</button>
+  <button class="chiaro" id="esporta">Esporta testo</button>
+  <span id="stato">trascina = nuova area · <kbd>Shift</kbd>+trascina (o «+ pezzo») = aggiunge alla stessa nota · <kbd>Canc</kbd> elimina</span>
+</header>
+<main>
+  <div id="sx"><div id="tela"><img id="img" alt="pagina"></div></div>
+  <div class="maniglia" data-m="1"></div>
+  <div id="mid"><h3>materiale del prof</h3><div id="misure"></div><img id="fonte" alt="fonte"><p id="nofonte" class="vuoto" hidden>Nessuna fonte del prof trovata per questa pagina.</p></div>
+  <div class="maniglia" data-m="2"></div>
+  <div id="dx"><p class="vuoto">Nessuna nota su questa pagina. Trascina un rettangolo sull'immagine.</p></div>
+</main>
+<script>
+const CAMPI = [
+  ['tipo', ['testo', 'immagine', 'misto']],
+  ['ruolo', ['a memoria', 'da spiegare', 'esempio', 'titolo', 'struttura']],
+  ['immagine', ['ricrea', 'mostra come', 'semi', 'riuso', 'nessuna']],
+  ['ripetizione', ['stesso oggetto (martello)', 'oggetto nuovo (varietà)', 'non serve']],
+];
+let pagine = [], dati = {}, fonti = {}, pag = null, sel = -1;
+const $ = s => document.querySelector(s);
+const note = () => dati[pag] || (dati[pag] = []);
+
+async function avvia() {
+  pagine = await (await fetch('/pagine')).json();
+  dati = await (await fetch('/dati')).json();
+  fonti = await (await fetch('/fonti')).json();
+  $('#pagina').innerHTML = pagine.map(p => `<option value="${p}">${p}${fonti[p.replace('.png', '')] ? ' · con fonte' : ''}</option>`).join('');
+  const conFonte = pagine.find(p => fonti[p.replace('.png', '')]);
+  const ultima = localStorage.getItem('ultima');
+  vaia(ultima && pagine.includes(ultima) ? ultima : (conFonte || pagine[0]));
+}
+function mostraFonte(p) {
+  const k = p.replace('.png', ''), f = fonti[k], img = $('#fonte'), vuoto = $('#nofonte');
+  if (f) { img.hidden = false; vuoto.hidden = true; img.src = '/fonte/' + encodeURIComponent(k + '.png'); $('#mid h3').textContent = 'materiale del prof' + (f.nome ? ' · ' + f.nome.replace(/\.pdf$/i, '') + ' p.' + f.pagina + (f.altre_pagine && f.altre_pagine.length ? ' (+ p.' + f.altre_pagine.join(', p.') + ')' : '') : '');
+    const rip = f.ripresa !== undefined ? f.ripresa : f.copia, ten = f.tenuto;
+    $('#misure').innerHTML = rip === undefined ? '' :
+      `<div class="mis"><b>${rip}%</b><span>della mia pagina viene da lì<br>(il resto è mio: ${100 - rip}% freestyle)</span><div class="barra"><i style="width:${rip}%"></i></div></div>` +
+      (ten === undefined ? '' : `<div class="mis"><b>${ten}%</b><span>della pagina del prof l'ho tenuto<br>(il resto l'ho buttato)</span><div class="barra"><i style="width:${ten}%"></i></div></div>`) +
+      `<div class="mis"><span>parole in comune:<br>${f.parole || '—'}</span></div>`; }
+  else {
+    img.hidden = true; vuoto.hidden = false; $('#misure').innerHTML = ''; $('#mid h3').textContent = 'materiale del prof — non trovato per questa pagina';
+    const lista = pagine.filter(q => fonti[q.replace('.png', '')]);
+    vuoto.innerHTML = `Per questa pagina non è stato ritrovato il materiale del prof.<br><br>Pagine che ce l'hanno (${lista.length}):<br>` +
+      lista.map(q => `<a href="#" data-va="${q}">${q.replace('.png', '').replace('schemi_architettura_', 'architettura ').replace('schema_esercizi_', 'esercizi ')}</a>`).join(' · ');
+    vuoto.querySelectorAll('[data-va]').forEach(a => a.onclick = e => { e.preventDefault(); salva(); vaia(e.target.dataset.va); });
+  }
+}
+function vaia(p) { mostraFonte(p); pag = p; localStorage.setItem('ultima', p); $('#pagina').value = p; $('#img').src = '/img/' + encodeURIComponent(p); sel = -1; disegna(); }
+const aree = n => n.rects || (n.rects = [{ x: n.x, y: n.y, w: n.w, h: n.h }]);  // vecchie note: un rettangolo solo
+function disegna() {
+  document.querySelectorAll('.area').forEach(e => e.remove());
+  const tela = $('#tela');
+  note().forEach((n, i) => aree(n).forEach((r, j) => {
+    const d = document.createElement('div'); d.className = 'area' + (i === sel ? ' sel' : '');
+    d.style.cssText += `left:${r.x * 100}%;top:${r.y * 100}%;width:${r.w * 100}%;height:${r.h * 100}%`;
+    d.innerHTML = `<b>${i + 1}${aree(n).length > 1 ? '.' + (j + 1) : ''}</b>`;
+    d.onclick = e => { e.stopPropagation(); sel = i; disegna(); const el = document.querySelectorAll('.nota')[i]; el && el.scrollIntoView({ block: 'nearest' }); };
+    tela.appendChild(d);
+  }));
+  pannello();
+}
+function pannello() {
+  const dx = $('#dx');
+  if (!note().length) { dx.innerHTML = '<p class="vuoto">Nessuna nota su questa pagina. Trascina un rettangolo sull\'immagine.</p>'; return; }
+  dx.innerHTML = note().map((n, i) => `
+    <div class="nota ${i === sel ? 'sel' : ''}" data-i="${i}">
+      <h4><span>Area ${i + 1}${aree(n).length > 1 ? ` (${aree(n).length} pezzi)` : ''}</span><span><button class="chiaro" data-piu="${i}">+ pezzo</button> <button class="chiaro" data-del="${i}">elimina</button></span></h4>
+      <div class="campi">${CAMPI.map(([k, vs]) => `<label>${k}
+        <select data-k="${k}" data-i="${i}"><option value=""></option>${vs.map(v => `<option ${n[k] === v ? 'selected' : ''}>${v}</option>`).join('')}</select></label>`).join('')}</div>
+      <textarea data-i="${i}" placeholder="perché l'ho fatto così (parole tue)">${n.commento || ''}</textarea>
+    </div>`).join('');
+  dx.querySelectorAll('textarea').forEach(t => t.oninput = e => { note()[+e.target.dataset.i].commento = e.target.value; });
+  dx.querySelectorAll('select[data-k]').forEach(s => s.onchange = e => { note()[+e.target.dataset.i][e.target.dataset.k] = e.target.value; });
+  dx.querySelectorAll('[data-piu]').forEach(b => b.onclick = e => { e.stopPropagation(); sel = +e.target.dataset.piu; aggiungi = true; $('#stato').textContent = `ora trascina: il rettangolo si aggiunge alla nota ${sel + 1}`; disegna(); });
+  dx.querySelectorAll('[data-del]').forEach(b => b.onclick = e => { note().splice(+e.target.dataset.del, 1); sel = -1; disegna(); });
+  dx.querySelectorAll('.nota').forEach(el => el.onclick = () => { sel = +el.dataset.i; disegna(); });
+}
+// selezione con trascinamento
+let inizio = null, prov = null, aggiungi = false;
+$('#tela').addEventListener('mousedown', e => {
+  if (e.target.closest('.area')) return;
+  if (e.shiftKey && sel >= 0) aggiungi = true;
+  const r = $('#img').getBoundingClientRect(); inizio = { x: e.clientX - r.left, y: e.clientY - r.top };
+  prov = document.createElement('div'); prov.className = 'area'; $('#tela').appendChild(prov); e.preventDefault();
+});
+window.addEventListener('mousemove', e => {
+  if (!inizio) return;
+  const r = $('#img').getBoundingClientRect(), x = Math.min(Math.max(e.clientX - r.left, 0), r.width), y = Math.min(Math.max(e.clientY - r.top, 0), r.height);
+  prov.style.cssText += `left:${Math.min(x, inizio.x)}px;top:${Math.min(y, inizio.y)}px;width:${Math.abs(x - inizio.x)}px;height:${Math.abs(y - inizio.y)}px`;
+});
+window.addEventListener('mouseup', e => {
+  if (!inizio) return;
+  const r = $('#img').getBoundingClientRect(), x = Math.min(Math.max(e.clientX - r.left, 0), r.width), y = Math.min(Math.max(e.clientY - r.top, 0), r.height);
+  const w = Math.abs(x - inizio.x), h = Math.abs(y - inizio.y);
+  prov.remove(); const s = inizio; inizio = null;
+  if (w < 12 || h < 12) return;
+  const rect = { x: Math.min(x, s.x) / r.width, y: Math.min(y, s.y) / r.height, w: w / r.width, h: h / r.height };
+  if (aggiungi && sel >= 0) { aree(note()[sel]).push(rect); aggiungi = false; $('#stato').textContent = 'area aggiunta alla nota ' + (sel + 1); disegna(); return; }
+  note().push({ rects: [rect], commento: '' });
+  sel = note().length - 1; disegna();
+  setTimeout(() => { const t = document.querySelectorAll('.nota textarea')[sel]; t && t.focus(); }, 30);
+});
+window.addEventListener('keydown', e => {
+  if (e.key === 'Delete' && sel >= 0 && document.activeElement.tagName !== 'TEXTAREA') { note().splice(sel, 1); sel = -1; disegna(); }
+  if (e.key === 'Escape') { sel = -1; disegna(); }
+});
+async function salva() {
+  const r = await (await fetch('/dati', { method: 'POST', body: JSON.stringify({ pagina: pag, note: note() }) })).json();
+  $('#stato').textContent = `salvato · ${r.pagine_annotate} pagine, ${r.note_totali} note`;
+}
+$('#salva').onclick = salva;
+$('#pagina').onchange = e => { salva(); vaia(e.target.value); };
+$('#prec').onclick = () => { salva(); vaia(pagine[Math.max(0, pagine.indexOf(pag) - 1)]); };
+$('#succ').onclick = () => { salva(); vaia(pagine[Math.min(pagine.length - 1, pagine.indexOf(pag) + 1)]); };
+$('#esporta').onclick = () => {
+  const righe = Object.entries(dati).flatMap(([p, ns]) => ns.map((n, i) => `${p} · area ${i + 1} [${['tipo', 'ruolo', 'immagine', 'ripetizione'].map(k => n[k] || '-').join(' · ')}] ${n.commento || ''}`));
+  const b = new Blob([righe.join('\n')], { type: 'text/plain' }); const a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = 'annotazioni.txt'; a.click();
+};
+// colonne ridimensionabili (trascina le maniglie); larghezze ricordate
+const main = document.querySelector('main');
+['c1', 'c2', 'c3'].forEach(k => { const v = localStorage.getItem(k); if (v) main.style.setProperty('--' + k, v); });
+document.querySelectorAll('.maniglia').forEach(h => h.addEventListener('mousedown', e => {
+  e.preventDefault(); const quale = h.dataset.m; document.body.style.cursor = 'col-resize';
+  const muovi = ev => {
+    const r = main.getBoundingClientRect(); const x = Math.min(Math.max(ev.clientX - r.left, 180), r.width - 180);
+    if (quale === '1') { main.style.setProperty('--c1', x + 'px'); localStorage.setItem('c1', x + 'px'); }
+    else { const c1 = main.getBoundingClientRect().left, primo = parseFloat(getComputedStyle(main).gridTemplateColumns.split(' ')[0]);
+      const w = Math.max(180, x - primo); main.style.setProperty('--c2', w + 'px'); localStorage.setItem('c2', w + 'px'); }
+  };
+  const su = () => { document.body.style.cursor = ''; window.removeEventListener('mousemove', muovi); window.removeEventListener('mouseup', su); };
+  window.addEventListener('mousemove', muovi); window.addEventListener('mouseup', su);
+}));
+$('#img').onload = disegna;
+setInterval(salva, 30000);
+avvia();
+</script>
+</body>
+</html>

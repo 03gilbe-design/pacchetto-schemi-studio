@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><title>Cache associativa a gruppi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#ddd}
+body{width:794px;height:1123px;overflow:hidden;background:#FAF6EF;color:#997E71;font-family:"Segoe UI",Arial,sans-serif;font-size:11.5px;display:flex;flex-direction:column;position:relative}
+.hand{font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive}
+.band{background:#F2AA84;padding:16px 34px 12px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.band h1{font-size:30px;color:#FF654C;font-weight:400;line-height:1.1;background:#fff;padding:6px 14px;border-radius:4px}
+.ctx{display:flex;align-items:center;gap:8px;font-size:12px;color:#795548}
+.ctx b{background:#fff;padding:4px 8px;border-radius:3px;color:#795548}
+.ctx svg{width:46px;height:12px}
+main{flex:1;padding:14px 34px 10px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:18px}
+h2{font-size:12px;color:#795548;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:4px}
+h2 i{font-style:normal;color:#FF654C;margin-right:6px}
+.sm{font-size:10.5px;color:#997E71}
+.k{color:#795548;font-weight:700}
+.c{color:#FF654C;font-weight:700}
+.t{color:#2BBFCF;font-weight:700}
+.bar{display:flex;margin-top:4px;border:1.5px solid #795548;width:100%}
+.bar div{padding:7px 0;text-align:center;color:#795548;font-weight:700;font-size:13px;background:#fff}
+.bar div+div{border-left:1.5px solid #795548}
+.calc{display:flex;margin-top:4px}
+.calc div{font-size:10.5px;text-align:center;padding:0 4px}
+.res{margin:0 34px 18px;border-top:2.2px solid #FF654C;padding-top:8px;display:flex;gap:14px;align-items:center}
+.res .hand{font-size:19px;color:#FF654C;line-height:1.35}
+svg text{font-family:"Segoe UI",Arial,sans-serif}
+</style></head><body>
+
+<div class="band">
+  <h1 class="hand">Cache associativa a gruppi</h1>
+  <div class="ctx">
+    <b>indirizzo di memoria</b>
+    <svg viewBox="0 0 46 12"><path d="M1 6H42M36 1l6 5-6 5" fill="none" stroke="#795548" stroke-width="1.5"/></svg>
+    <b>hit / miss in un gruppo</b>
+  </div>
+</div>
+
+<main>
+<!-- RIGA 1 -->
+<div class="row">
+  <div style="flex:none;width:478px">
+    <h2><i>①</i>Caso piccolo: 16 blocchi → 4 gruppi × 2 posizioni</h2>
+    <svg viewBox="0 0 478 352" width="478" height="352">
+      <text x="20" y="14" font-size="11" fill="#795548" font-weight="700">Memoria</text>
+      <text x="300" y="14" font-size="11" fill="#795548" font-weight="700">Cache</text>
+      <g id="lines"></g>
+      <g id="mem"></g>
+      <g id="cache"></g>
+      <!-- zoom label -->
+      <text x="20" y="344" font-size="10" fill="#997E71">blocchi 1 · 5 · 9 · 13 → tutti nel gruppo 1 (n° blocco mod 4)</text>
+    </svg>
+  </div>
+
+  <div style="flex:1">
+    <h2><i>②</i>Stesse 8 posizioni, tre modi</h2>
+    <svg viewBox="0 0 250 300" width="250" height="300" id="spec"></svg>
+  </div>
+</div>
+
+<!-- RIGA 2 -->
+<div>
+  <h2><i>③</i>Ricerca del blocco 13 (1101): gruppo → etichette → uguale?</h2>
+  <svg viewBox="0 0 726 196" width="726" height="196" id="look"></svg>
+</div>
+
+<!-- RIGA 3 -->
+<div>
+  <h2><i>④</i>Numeri veri: 4.096 blocchi · 64 gruppi × 2 posizioni = 128</h2>
+  <div class="bar">
+    <div style="width:37.5%">6 bit ETICHETTA</div>
+    <div style="width:37.5%">6 bit GRUPPO</div>
+    <div style="width:25%">4 bit SPIAZZ.</div>
+  </div>
+  <div class="calc">
+    <div style="width:37.5%">4.096 / 64 = <span class="k">64 blocchi per gruppo</span><br>log₂ 64 = 6</div>
+    <div style="width:37.5%"><span class="k">64 gruppi</span><br>log₂ 64 = 6</div>
+    <div style="width:25%"><span class="k">16 parole</span> nel blocco<br>log₂ 16 = 4</div>
+  </div>
+  <p class="sm" style="margin-top:6px">Gruppo = dove guardare (come il diretto) · Etichetta = quale blocco tra i 64 candidati (come l'associativo).</p>
+</div>
+</main>
+
+<div class="res">
+  <svg width="60" height="40" viewBox="0 0 60 40"><path d="M2 20H50M40 8l12 12-12 12" fill="none" stroke="#FF654C" stroke-width="3"/></svg>
+  <div class="hand">2 confronti di etichetta invece di 128 — e meno conflitti del diretto.</div>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(p,n,a,t){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;p.appendChild(e);return e}
+const B="#795548",C="#FF654C",P="#F2AA84",G="#C8B8B0",W="#fff";
+// --- caso 1
+const L=document.getElementById("lines"),M=document.getElementById("mem"),K=document.getElementById("cache");
+const gy=g=>26+g*80;
+for(let i=0;i<16;i++){
+  const y=24+i*19,g=i%4,hot=g==1;
+  el(L,"line",{x1:86,y1:y+8,x2:300,y2:gy(g)+28,stroke:hot?C:G,"stroke-width":hot?1.8:.8,"stroke-dasharray":hot?"":"3 3"});
+  el(M,"rect",{x:20,y:y,width:66,height:16,fill:hot?P:W,stroke:B,"stroke-width":1.2});
+  el(M,"text",{x:53,y:y+12,"text-anchor":"middle","font-size":10,fill:B},"Blocco "+i);
+}
+for(let g=0;g<4;g++){
+  const hot=g==1;
+  for(let s=0;s<2;s++){
+    const y=gy(g)+s*28;
+    el(K,"rect",{x:300,y:y,width:40,height:26,fill:W,stroke:B,"stroke-width":1.2});
+    el(K,"text",{x:320,y:y+16,"text-anchor":"middle","font-size":9,fill:"#997E71"},"etich.");
+    el(K,"rect",{x:340,y:y,width:80,height:26,fill:hot?P:"#C2D9E5",stroke:B,"stroke-width":1.2});
+    el(K,"text",{x:380,y:y+16,"text-anchor":"middle","font-size":10,fill:B},"posizione "+(g*2+s));
+  }
+  el(K,"path",{d:`M428 ${gy(g)+2}q8 0 8 8v${hot?14:14}q0 8 8 8q-8 0-8 8v14q0 8-8 8`,fill:"none",stroke:hot?C:B,"stroke-width":hot?2.4:1.2});
+  el(K,"text",{x:450,y:gy(g)+32,"font-size":11,fill:hot?C:B,"font-weight":hot?700:400},"gruppo "+g);
+}
+// --- spettro
+const S=document.getElementById("spec");
+const rows=[["DIRETTO","8 gruppi × 1 posizione",1,"un solo posto: conflitti"],["A GRUPPI","4 gruppi × 2 posizioni",2,"alleviati, costo basso"],["ASSOCIATIVO","1 gruppo × 8 posizioni",8,"ricerca su tutte: caro"]];
+rows.forEach((r,j)=>{
+  const y0=j*100+4,hot=j==1;
+  el(S,"text",{x:0,y:y0+12,"font-size":12,"font-weight":700,fill:hot?C:B},r[0]);
+  el(S,"text",{x:0,y:y0+27,"font-size":10.5,fill:"#997E71"},r[1]);
+  const n=8/r[2];
+  for(let g=0;g<n;g++){
+    const gw=r[2]*22+(r[2]>1?0:0), gap=r[2]==1?6:(r[2]==2?10:0);
+    const x=g*(r[2]*22+gap);
+    el(S,"rect",{x:x,y:y0+36,width:r[2]*22,height:22,fill:hot?P:W,stroke:hot?C:B,"stroke-width":hot?2.2:1.2});
+    for(let s=1;s<r[2];s++)el(S,"line",{x1:x+s*22,y1:y0+36,x2:x+s*22,y2:y0+58,stroke:B,"stroke-width":.8});
+  }
+  el(S,"text",{x:0,y:y0+76,"font-size":10.5,fill:"#997E71"},r[3]);
+});
+el(S,"path",{d:"M236 20v260",stroke:G,"stroke-width":1,"stroke-dasharray":"3 3",fill:"none"});
+// --- ricerca
+const R=document.getElementById("look");
+function box(x,y,w,h,t,o={}){el(R,"rect",{x,y,width:w,height:h,fill:o.f||W,stroke:o.s||B,"stroke-width":o.w||1.2});el(R,"text",{x:x+w/2,y:y+h/2+4,"text-anchor":"middle","font-size":o.fs||12,fill:o.c||B,"font-weight":o.b?700:400},t)}
+el(R,"text",{x:0,y:16,"font-size":10.5,fill:"#997E71"},"indirizzo");
+box(0,24,56,34,"1 1",{b:1,f:"#C2D9E5"}); box(56,24,56,34,"0 1",{b:1,f:P,s:C,w:2.2});
+el(R,"text",{x:28,y:74,"text-anchor":"middle","font-size":10,fill:B},"etichetta");
+el(R,"text",{x:84,y:74,"text-anchor":"middle","font-size":10,fill:C},"gruppo");
+// gruppo sceglie
+el(R,"path",{d:"M84 80V150H230",fill:"none",stroke:C,"stroke-width":1.8,"stroke-dasharray":"5 3"});
+el(R,"text",{x:92,y:112,"font-size":10,fill:C},"1 → gruppo 1");
+// 4 gruppi mini
+for(let g=0;g<4;g++){const y=24+g*14;box(230,y,0.1,0.1,"")}
+// gruppo 1 slots
+el(R,"text",{x:230,y:104,"font-size":10.5,fill:C,"font-weight":700},"gruppo 1");
+box(230,112,50,34,"01",{b:1}); box(280,112,100,34,"posizione 2",{f:"#C2D9E5",fs:11});
+box(230,150,50,34,"11",{b:1,f:P,s:C,w:2.2}); box(280,150,100,34,"posizione 3",{f:P,s:C,w:2.2,fs:11});
+// confronto etichetta -> due slot
+el(R,"path",{d:"M28 58V90H210V129H230",fill:"none",stroke:"#2BBFCF","stroke-width":1.5,"stroke-dasharray":"5 3"});
+el(R,"path",{d:"M210 90V167H230",fill:"none",stroke:"#2BBFCF","stroke-width":1.5,"stroke-dasharray":"5 3"});
+el(R,"text",{x:40,y:86,"font-size":10,fill:"#2BBFCF"},"11 = 01 ?  no");
+el(R,"text",{x:40,y:182,"font-size":10,fill:"#2BBFCF"},"11 = 11 ?  sì");
+el(R,"path",{d:"M40 178H210",stroke:"none"});
+// esito
+el(R,"path",{d:"M380 167H470",fill:"none",stroke:C,"stroke-width":2.6});
+el(R,"path",{d:"M460 157l12 10-12 10",fill:"none",stroke:C,"stroke-width":2.6});
+box(480,148,120,38,"HIT",{b:1,f:C,s:C,c:"#fff",fs:18});
+el(R,"text",{x:540,y:140,"text-anchor":"middle","font-size":10.5,fill:C},"copia in posizione 3");
+// miss
+box(480,24,200,44,"nessuna uguale = MISS",{f:W,c:"#997E71",s:G,fs:11});
+el(R,"text",{x:580,y:86,"text-anchor":"middle","font-size":10,fill:"#997E71"},"il blocco non è in CACHE");
+</script>
+</body></html>

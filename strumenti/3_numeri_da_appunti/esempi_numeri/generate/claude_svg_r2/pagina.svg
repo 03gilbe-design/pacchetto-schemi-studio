@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="794" height="1123" viewBox="0 0 794 1123">
+<rect width="794" height="1123" fill="#FAF6EF"/>
+<rect width="794" height="66" fill="#FF654C"/>
+<text x="40" y="43" font-family="Segoe Print, Bradley Hand, Comic Sans MS, cursive" font-size="29" fill="#FFFFFF">Indirizzamento associativo a gruppi</text>
+<text x="40" y="90" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#997E71">Da: <tspan font-weight="bold" fill="#795548">blocco di memoria</tspan>  →  A: <tspan font-weight="bold" fill="#795548">posizione in cache</tspan> (si sceglie il gruppo, poi si cerca dentro)</text>
+
+<g font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#997E71">
+<text x="40" y="118" font-weight="bold" fill="#795548" font-size="12">Diretto</text>
+<text x="285" y="118" font-weight="bold" fill="#795548" font-size="12">A gruppi</text>
+<text x="530" y="118" font-weight="bold" fill="#795548" font-size="12">Associativo</text>
+<line x1="40" y1="138" x2="264" y2="138" stroke="#F2AA84" stroke-width="16" stroke-dasharray="12 2"/>
+<line x1="285" y1="138" x2="509" y2="138" stroke="#F2AA84" stroke-width="16" stroke-dasharray="12 0 12 4"/>
+<line x1="530" y1="138" x2="754" y2="138" stroke="#F2AA84" stroke-width="16" stroke-dasharray="13.4 0.6"/>
+<rect x="529" y="129" width="226" height="18" rx="3" fill="none" stroke="#795548" stroke-width="1"/>
+<line x1="285" y1="152" x2="509" y2="152" stroke="#FF654C" stroke-width="2.5"/>
+<text x="40" y="170">128 gruppi × 1 posizione</text>
+<text x="40" y="184">conflitti ↑ · 1 confronto</text>
+<text x="285" y="170">64 gruppi × 2 posizioni</text>
+<text x="285" y="184">conflitti ↓ · 2 confronti</text>
+<text x="530" y="170">1 gruppo × 128 posizioni</text>
+<text x="530" y="184">conflitti ≈ 0 · 128 confronti</text>
+</g>
+<line x1="40" y1="200" x2="754" y2="200" stroke="#C8B8B0" stroke-width="1"/>
+
+<g font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#997E71">
+<text x="40" y="220" font-weight="bold" fill="#795548" font-size="12">Caso: 4096 blocchi, 64 gruppi da 2 posizioni</text>
+<text x="85" y="240" text-anchor="middle" font-weight="bold" fill="#795548">Memoria</text>
+<text x="495" y="240" text-anchor="middle" font-weight="bold" fill="#795548">Cache</text>
+<g stroke="#997E71" stroke-width="1" stroke-dasharray="4 3" fill="none">
+<path d="M130 259 L416 274 M130 333 L416 274 M130 407 L416 274 M130 287 L416 344 M130 435 L416 344"/>
+</g>
+<path d="M130 361 L416 344" stroke="#FF654C" stroke-width="2.5" fill="none"/>
+<g stroke="#795548" stroke-width="1.2">
+<rect x="40" y="248" width="90" height="22" fill="#FFFFFF"/>
+<rect x="40" y="276" width="90" height="22" fill="#FFFFFF"/>
+<rect x="40" y="322" width="90" height="22" fill="#FFFFFF"/>
+<rect x="40" y="350" width="90" height="22" fill="#FF654C" stroke="#FF654C"/>
+<rect x="40" y="396" width="90" height="22" fill="#FFFFFF"/>
+<rect x="40" y="424" width="90" height="22" fill="#FFFFFF"/>
+</g>
+<g text-anchor="middle" fill="#795548" font-size="12">
+<text x="85" y="263">Blocco 0</text><text x="85" y="291">Blocco 1</text>
+<text x="85" y="337">Blocco 64</text><text x="85" y="365" fill="#FFFFFF" font-weight="bold">Blocco 65</text>
+<text x="85" y="411">Blocco 128</text><text x="85" y="439">Blocco 129</text>
+<text x="85" y="312" font-size="16">⋮</text><text x="85" y="386" font-size="16">⋮</text><text x="85" y="466" font-size="16">⋮</text>
+<text x="495" y="425" font-size="16">⋮</text>
+</g>
+<g stroke="#795548" stroke-width="1.2">
+<rect x="420" y="248" width="50" height="26" fill="#FFFFFF"/><rect x="470" y="248" width="100" height="26" fill="#F2AA84"/>
+<rect x="420" y="274" width="50" height="26" fill="#FFFFFF"/><rect x="470" y="274" width="100" height="26" fill="#F2AA84"/>
+<rect x="420" y="318" width="50" height="26" fill="#FFFFFF"/><rect x="470" y="318" width="100" height="26" fill="#F2AA84"/>
+<rect x="420" y="344" width="50" height="26" fill="#FFFFFF"/><rect x="470" y="344" width="100" height="26" fill="#F2AA84"/>
+<rect x="420" y="440" width="50" height="26" fill="#FFFFFF"/><rect x="470" y="440" width="100" height="26" fill="#F2AA84"/>
+<rect x="420" y="466" width="50" height="26" fill="#FFFFFF"/><rect x="470" y="466" width="100" height="26" fill="#F2AA84"/>
+</g>
+<g text-anchor="middle" fill="#795548" font-size="10">
+<text x="445" y="265">etich.</text><text x="445" y="291">etich.</text><text x="445" y="335">etich.</text><text x="445" y="361">etich.</text><text x="445" y="457">etich.</text><text x="445" y="483">etich.</text>
+<g font-size="11"><text x="520" y="265">Posizione 0</text><text x="520" y="291">Posizione 1</text><text x="520" y="335">Posizione 2</text><text x="520" y="361">Posizione 3</text><text x="520" y="457">Posizione 126</text><text x="520" y="483">Posizione 127</text></g>
+</g>
+<g stroke="#795548" stroke-width="1.2"><line x1="576" y1="248" x2="576" y2="300"/><line x1="576" y1="318" x2="576" y2="370" stroke="#FF654C" stroke-width="2.5"/><line x1="576" y1="440" x2="576" y2="492"/></g>
+<text x="584" y="278" font-weight="bold" fill="#795548">Gruppo 0</text>
+<text x="584" y="348" font-weight="bold" fill="#FF654C">Gruppo 1</text>
+<text x="584" y="470" font-weight="bold" fill="#795548">Gruppo 63</text>
+<g font-size="11">
+<text x="650" y="262" fill="#795548" font-weight="bold">blocco k → gruppo</text>
+<text x="650" y="278" fill="#795548" font-weight="bold" font-size="13">k mod 64</text>
+<text x="650" y="318">0, 64, 128 → gruppo 0</text>
+<text x="650" y="334" fill="#FF654C" font-weight="bold">1, 65, 129 → gruppo 1</text>
+<text x="650" y="372">64 gruppi × 2 = 128</text>
+<text x="650" y="388">posizioni in cache</text>
+<text x="650" y="420">4096 ÷ 64 = 64 blocchi</text>
+<text x="650" y="436">per ogni gruppo</text>
+</g>
+</g>
+<line x1="40" y1="506" x2="754" y2="506" stroke="#C8B8B0" stroke-width="1"/>
+
+<g font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#997E71">
+<text x="40" y="526" font-weight="bold" fill="#795548" font-size="12">Indirizzo del blocco 65, parola 5 (16 bit)</text>
+<rect x="60" y="540" width="132" height="24" fill="#F2AA84"/>
+<rect x="192" y="540" width="132" height="24" fill="#FF654C"/>
+<rect x="324" y="540" width="88" height="24" fill="#C8B8B0"/>
+<path d="M82 540v24M104 540v24M126 540v24M148 540v24M170 540v24M214 540v24M236 540v24M258 540v24M280 540v24M302 540v24M346 540v24M368 540v24M390 540v24" stroke="#FAF6EF" stroke-width="1"/>
+<rect x="60" y="540" width="352" height="24" fill="none" stroke="#795548" stroke-width="1.2"/>
+<g text-anchor="middle" font-size="13" fill="#795548" font-weight="bold">
+<text x="71 93 115 137 159 181" y="557">000001</text>
+<text x="203 225 247 269 291 313" y="557" fill="#FFFFFF">000001</text>
+<text x="335 357 379 401" y="557">0101</text>
+<g font-size="11">
+<text x="126" y="584">Etichetta · 6 bit</text><text x="258" y="584">Gruppo · 6 bit</text><text x="368" y="584">Spiazz. · 4 bit</text>
+</g>
+<g font-weight="normal" fill="#997E71">
+<text x="126" y="598">chi è il blocco</text><text x="258" y="598">dove cercare</text><text x="368" y="598">quale parola (1 su 16)</text>
+</g>
+</g>
+<text x="440" y="554" font-size="14" font-weight="bold" fill="#795548">65 = 1 × 64 + 1</text>
+<text x="440" y="572">etichetta 1 · gruppo 1</text>
+<text x="440" y="588">parola 5 = 0101</text>
+</g>
+<line x1="40" y1="614" x2="754" y2="614" stroke="#C8B8B0" stroke-width="1"/>
+
+<g font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#997E71">
+<text x="40" y="634" font-weight="bold" fill="#795548" font-size="12">Zoom dentro il Gruppo 1</text>
+<text x="40" y="654">1 · il campo gruppo (1) porta al Gruppo 1: posizioni 2 e 3</text>
+<text x="40" y="670">2 · l'etichetta dell'indirizzo si confronta con le 2 etichette del gruppo</text>
+<text x="110" y="702" text-anchor="middle">etichetta cercata</text>
+<rect x="60" y="708" width="100" height="26" fill="#F2AA84" stroke="#795548" stroke-width="1.2"/>
+<text x="110" y="726" text-anchor="middle" font-size="13" font-weight="bold" fill="#795548">000001</text>
+<path d="M160 721 L298 714 M160 721 L298 742" stroke="#2BBFCF" stroke-width="1.5" stroke-dasharray="5 3" fill="none"/>
+<rect x="296" y="698" width="288" height="62" rx="4" fill="none" stroke="#C8B8B0" stroke-dasharray="4 3"/>
+<g stroke="#795548" stroke-width="1.2">
+<rect x="300" y="701" width="70" height="26" fill="#FFFFFF"/><rect x="370" y="701" width="110" height="26" fill="#F2AA84"/>
+<rect x="300" y="729" width="70" height="26" fill="#FFFFFF"/><rect x="370" y="729" width="110" height="26" fill="#F2AA84"/>
+</g>
+<g text-anchor="middle" fill="#795548" font-size="12">
+<text x="335" y="719" font-weight="bold">000001</text><text x="335" y="747">000000</text>
+<text x="425" y="719">Posizione 2</text><text x="425" y="747">Posizione 3</text>
+</g>
+<text x="496" y="720" font-size="16" font-weight="bold" fill="#2BBFCF">✓</text>
+<text x="496" y="748" font-size="16" fill="#997E71">✗</text>
+<text x="600" y="716" font-weight="bold" fill="#795548" font-size="12">uguale = HIT</text>
+<text x="600" y="731">parola 5 di Posizione 2</text>
+<text x="600" y="750">nessuna uguale = MISS</text>
+<text x="600" y="765">blocco non in cache</text>
+</g>
+<line x1="40" y1="788" x2="754" y2="788" stroke="#C8B8B0" stroke-width="1"/>
+
+<g font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#997E71">
+<text x="40" y="808" font-weight="bold" fill="#795548" font-size="12">Confronti di etichetta per ogni accesso</text>
+<text x="40" y="836">Diretto</text><rect x="140" y="826" width="3" height="14" fill="#F2AA84"/><text x="150" y="837">1</text>
+<text x="40" y="864">A gruppi</text><rect x="140" y="854" width="6" height="14" fill="#FF654C"/><text x="154" y="865" font-weight="bold" fill="#795548">2</text>
+<text x="40" y="892">Associativo</text><rect x="140" y="882" width="384" height="14" fill="#F2AA84"/><text x="532" y="893">128</text>
+<text x="600" y="865">poco costo, pochi conflitti</text>
+</g>
+
+<rect x="40" y="926" width="714" height="96" rx="10" fill="#FFFFFF" fill-opacity="0.5" stroke="#FF654C" stroke-width="2.5"/>
+<text x="62" y="962" font-family="Segoe Print, Bradley Hand, Comic Sans MS, cursive" font-size="21" fill="#FF654C">Blocco 65  →  Gruppo 1  (posizione 2 o 3)</text>
+<text x="62" y="1000" font-family="Segoe Print, Bradley Hand, Comic Sans MS, cursive" font-size="21" fill="#FF654C">2 confronti invece di 128  →  HIT in posizione 2</text>
+<text x="40" y="1050" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#997E71">Diretto e associativo sono i due casi limite: 128 gruppi da 1  ↔  1 gruppo da 128.</text>
+</svg>

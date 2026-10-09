@@ -1,0 +1,7 @@
+numpy
+pillow
+scipy
+scikit-image
+pymupdf
+matplotlib
+playwright
