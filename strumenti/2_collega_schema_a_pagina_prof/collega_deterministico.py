@@ -1,9 +1,9 @@
 """Collega ogni pagina dei TUOI schemi alla pagina del prof piu' simile. Solo codice, niente AI.
 Riusa il codice gia' nel repo:
   - annotatore/prepara.py: pagine_prof() + migliori()  -> parole rare in comune pesate IDF (pagine con testo)
-  - 3_numeri_da_appunti/allinea_auto.py: frasi_prof() + blocchi_miei()  e  allinea.py: parole()
+  - 3_misura_stile_dai_numeri/allinea_auto.py: frasi_prof() + blocchi_miei()  e  allinea.py: parole()
         -> per ogni coppia, quante frasi del prof ritrovi nel tuo schema (al posto di Gemini, solo sovrapposizione di parole)
-  - 3_numeri_da_appunti/trova_differenze.py  -> lanciato alla fine con --prof-parole preso dalle pagine del prof collegate
+  - 3_misura_stile_dai_numeri/trova_differenze.py  -> lanciato alla fine con --prof-parole preso dalle pagine del prof collegate
 Nuovo qui solo il ripiego VISIVO per pagine senza testo (PNG/scansioni): hash percettivo (dHash) + istogramma dei grigi.
 Opzione --gemini (UNICA parte con AI, solo per le pagine senza testo): Gemini guarda lo schema e le pagine del prof
 (fogli di miniature numerate -> 3 finaliste a piena risoluzione -> sceglie). Chiave da GEMINI_API_KEY / GEMINI_KEY
@@ -15,7 +15,7 @@ from pathlib import Path
 import fitz
 from PIL import Image
 
-QUI = Path(__file__).resolve().parent; NUM = QUI.parent / "3_numeri_da_appunti"
+QUI = Path(__file__).resolve().parent; NUM = QUI.parent / "3_misura_stile_dai_numeri"
 sys.path[:0] = [str(QUI / "annotatore"), str(NUM)]
 from prepara import pagine_prof, migliori, par
 _vuota = tempfile.mkdtemp(); Path(_vuota, "materiali.json").write_text("{}", encoding="utf-8")

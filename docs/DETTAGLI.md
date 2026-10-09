@@ -3,7 +3,7 @@
 Spiegazioni complete (prima erano nel README principale). I percorsi sono relativi alla radice del repo.
 
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/pacchetto-schemi-studio/blob/main/Demo_Pacchetto_Schemi_Colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/vocabolario-schemi-studio/blob/main/Demo_Pacchetto_Schemi_Colab.ipynb)
 
 **Prova in 1 clic:** il notebook `Demo_Pacchetto_Schemi_Colab.ipynb` gira su Colab senza chiavi, credenziali o Drive, sugli esempi inclusi.
 
@@ -11,16 +11,17 @@ Un vocabolario di regole per far generare a un modello (Claude, GPT, Gemini) **s
 
 ## Cosa c'è
 ```
-pacchetto/    le regole da dare al modello (A, B, C, E) e il modulo per estrarne di nuove (D); PACCHETTO.pdf = tutto in un file
-strumenti/    codice usato per preparare i dati e misurare i risultati
-  1_trascrizione_colab/     trascrivere lezioni/call su GPU Colab (Whisper + chi parla)
-  2_collega_pagine_prof/    collegare ogni pagina di appunti alla pagina del prof da cui viene
-  3_numeri_da_appunti/      estrarre numeri (colore, zone, tinte, stile, testo) da appunti e pagine generate
-esempi/       2 confronti + 1 grafico (solo pagine generate e schemi dello studente)
+vocabolario/                         le regole da dare al modello (A, B, C, E) e il modulo per estrarne di nuove (D); PACCHETTO.pdf = tutto in un file
+  completo/                          tutto il vocabolario in un file (PACCHETTO_MODELLO.md) + regole/ una per file
+strumenti/                           codice usato per preparare i dati e misurare i risultati
+  1_trascrivi_lezioni/               trascrivere lezioni/call su GPU Colab (Whisper + chi parla)
+  2_collega_schema_a_pagina_prof/    collegare ogni pagina di appunti alla pagina del prof da cui viene
+  3_misura_stile_dai_numeri/         estrarre numeri (colore, zone, tinte, stile, testo) da appunti e pagine generate
+esempi_schemi_e_pagine_generate/     2 confronti + 1 grafico (solo pagine generate e schemi dello studente)
 ```
 
 ## Come si usa il pacchetto (generare uno schema)
-Si dà al modello, in quest'ordine (dettagli e conteggio token in `pacchetto/PACCHETTO.md`):
+Si dà al modello, in quest'ordine (dettagli e conteggio token in `vocabolario/PACCHETTO.md`):
 1. **A_VOCABOLARIO.md** — solo le regole (macro 1-5, fino alla riga `---`). Le regole vengono prima dello stile.
 2. **B_NON_FARE.md** — solo le 5 voci **[GENERALE]** (1, 2, 6, 10, 11), una riga ciascuna, senza motivi e fonti.
 3. **C_STILE.md** — sezione 1 + elenco degli hex della palette + sezione 6, presentati come tono.
@@ -30,11 +31,11 @@ Si dà al modello, in quest'ordine (dettagli e conteggio token in `pacchetto/PAC
 Restano fuori: gli esempi in fondo ad A e C, le tabelle numeriche di C, le voci [OVERFITTING] di B, tutto D. Totale circa 2.070 token. In fondo a B ci sono domande "DA DECIDERE" ancora aperte.
 
 ## Come si estraggono regole nuove
-`pacchetto/D_MODULO_ESTRAI_REGOLE.md`: ingresso = una pagina del docente + lo schema che lo studente ne ha fatto (oppure solo appunti, confermando la regola su una seconda pagina). Un modello estrae **una** regola (prompt E1), un secondo modello la usa su una pagina del docente mai vista, il primo rivede il risultato. Solo schemi veri dello studente, mai fatti con l'AI.
+`vocabolario/D_MODULO_ESTRAI_REGOLE.md`: ingresso = una pagina del docente + lo schema che lo studente ne ha fatto (oppure solo appunti, confermando la regola su una seconda pagina). Un modello estrae **una** regola (prompt E1), un secondo modello la usa su una pagina del docente mai vista, il primo rivede il risultato. Solo schemi veri dello studente, mai fatti con l'AI.
 
 ## Prova veloce: trovare in numeri cosa distingue i tuoi schemi da quelli dell'AI
 ```
-cd strumenti/3_numeri_da_appunti
+cd strumenti/3_misura_stile_dai_numeri
 pip install -r requirements.txt
 python -m playwright install chromium
 python -X utf8 trova_differenze.py --suoi esempi_numeri/suoi/Architettura_Gilberto.pdf --generate esempi_numeri/generate --prof-parole 385
@@ -48,7 +49,7 @@ Il risultato è in `risultati_numeri/`: la classifica dei numeri che distinguono
    - le frasi di `FRASI_PER_IL_MODELLO.md` vanno nel prompt;
    - ogni pagina nuova si controlla con `python -X utf8 controlla_stile.py pagina.png --sorgente pagina.html --rif risultati_numeri/numeri.json`, che stampa OK o FUORI.
 
-I dettagli sono in `strumenti/3_numeri_da_appunti/README.md`.
+I dettagli sono in `strumenti/3_misura_stile_dai_numeri/README.md`.
 
 ## Strumenti
 Ognuno ha il suo README con cosa fa, input, output e comando.
@@ -64,7 +65,7 @@ Ognuno ha il suo README con cosa fa, input, output e comando.
 - Cosa non passa ancora: un terzo della pagina resta vuoto, forme perfette invece di contorni a mano (ignorati 3/3), il testo del prof sparisce nelle etichette. Con GPT, la voce NOT TODO toglie le legende (0/5 contro 3/5 senza).
 
 ## Cosa c'è e cosa no (scelte per il repo pubblico)
-- **Pagine del docente: tolte.** In `esempi/` resta solo la versione `p03_cache_associativo_senza_prof.png` (riquadro del prof oscurato); l'originale resta sul disco ed è in `.gitignore`.
-- **`strumenti/3_numeri_da_appunti/esempi_numeri/suoi/Architettura_Gilberto.pdf`: tenuto.** Sono appunti dello studente (7 pagine, Architettura degli elaboratori), servono alla demo di `trova_differenze.py` come esempio di "suoi schemi". Non contengono dati personali oltre al nome; in una pagina ci sono piccoli ritagli di microistruzioni del corso.
+- **Pagine del docente: tolte.** In `esempi_schemi_e_pagine_generate/` resta solo la versione `p03_cache_associativo_senza_prof.png` (riquadro del prof oscurato); l'originale resta sul disco ed è in `.gitignore`.
+- **`strumenti/3_misura_stile_dai_numeri/esempi_numeri/suoi/Architettura_Gilberto.pdf`: tenuto.** Sono appunti dello studente (7 pagine, Architettura degli elaboratori), servono alla demo di `trova_differenze.py` come esempio di "suoi schemi". Non contengono dati personali oltre al nome; in una pagina ci sono piccoli ritagli di microistruzioni del corso.
 - `esempi_numeri/generate/` contiene solo pagine generate dall'AI.
 - Nessuna chiave è nel codice: la chiave Groq si passa con la variabile d'ambiente `GROQ_API_KEY`. `.env`, `*auth*.json` e `materiali.json` (percorsi locali) sono esclusi da `.gitignore`.

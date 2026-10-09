@@ -3,7 +3,7 @@
 Tre strumenti: due solo codice (collega_deterministico, annotatore), uno con un modello che guarda l'immagine (Groq).
 
 ## collega_deterministico.py (solo codice; su Colab: `Collega_Pagine_Colab.ipynb`)
-**Cosa fa:** per ogni pagina dei tuoi schemi (PDF o PNG) trova la pagina del prof più simile (PDF o PNG). Riusa `annotatore/prepara.py` (`pagine_prof`, `migliori`: parole rare in comune pesate IDF) quando c'è testo; senza testo ripiega su hash percettivo + istogramma. Per ogni coppia conta le frasi del prof ritrovate nello schema (`frasi_prof`, `blocchi_miei` di `3_numeri_da_appunti/allinea_auto.py`, `parole` di `allinea.py`). Con `--generate` lancia `trova_differenze.py` con `--prof-parole` = mediana delle pagine del prof collegate.
+**Cosa fa:** per ogni pagina dei tuoi schemi (PDF o PNG) trova la pagina del prof più simile (PDF o PNG). Riusa `annotatore/prepara.py` (`pagine_prof`, `migliori`: parole rare in comune pesate IDF) quando c'è testo; senza testo ripiega su hash percettivo + istogramma. Per ogni coppia conta le frasi del prof ritrovate nello schema (`frasi_prof`, `blocchi_miei` di `3_misura_stile_dai_numeri/allinea_auto.py`, `parole` di `allinea.py`). Con `--generate` lancia `trova_differenze.py` con `--prof-parole` = mediana delle pagine del prof collegate.
 **Prova (09/10, 15 schemi di Architettura con fonte nota, 3 PDF del prof = 314 pagine; giusta = stesso PDF e pagina ±1):**
 
 | | solo codice | codice + Gemini (fra i 5 del codice) | Gemini su tutte le pagine (`--gemini`) |
