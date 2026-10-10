@@ -1,6 +1,6 @@
 # D — MODULO PER ESTRARRE UNA REGOLA (riutilizzabile)
-Basato su `COME_ESTRARRE_LE_REGOLE.md` (passi 3.2, 3.4, 4) e sul meccanismo di `ESPERIMENTI/37_TEST_MANUALE_REGOLA/genera_37.py`
-(Claude A estrae → Claude B genera su pagina mai vista → Claude A rivede). I prompt E1, V1, R1 sono quelli di 37, con due aggiunte segnate [+].
+Basato su [`docs/COME_ESTRARRE_LE_REGOLE.md`](../docs/COME_ESTRARRE_LE_REGOLE.md) (passi 3.2, 3.4, 4) e sull'esperimento 37 del tirocinio
+(Claude A estrae → Claude B genera su pagina mai vista → Claude A rivede). I prompt E1, V1, R1 sono qui sotto, pronti da incollare in chat (due aggiunte segnate [+]): non serve codice.
 
 ## 0. Ingresso
 - **Caso 1 (coppia):** una pagina del docente + lo schema che Gilberto ne ha ricavato, dello STESSO argomento (checklist K7). Se il suo schema copre più pagine del docente, prima si sceglie quali servono.
@@ -31,7 +31,7 @@ Output: UNA pagina HTML completa (<!doctype html>...</html>), un solo file, CSS 
 
 La pagina del professore e' il file immagine: {NUOVA} (aprilo e guardalo).
 ```
-Poi: render PNG + controllo automatico dei difetti (testo tagliato, sovrapposto: `genera_html.rendi_e_controlla`).
+Poi: guarda la pagina a occhio (testo tagliato o sovrapposto?); per i numeri rendila in PNG e controllala con `strumenti/3_misura_stile_dai_numeri/controlla_stile.py`.
 
 ## 3. Prompt R1 — revisione (Claude A, stessa regola, vede tutte e quattro le immagini)
 ```
@@ -47,10 +47,10 @@ Rispondi SOLO con JSON: {"seguita": "si'/in parte/no", "perche": "una o due fras
 ## 4. Ciclo (al massimo 2 giri)
 E1 → V1 → R1. Se `modifico` = true: V1 con la regola nuova → R1. Dopo il secondo giro ci si ferma comunque.
 - Il prompt di ogni passo si salva (file + sha256) PRIMA di vedere il risultato (CONGELATI).
-- Se la risposta non è JSON (es. limite di usage) il passo si ripete; non si interpreta. In 37 il passo A2 è fallito così una volta (`_tmp/A2_tentativo1_limite_usage_*`).
+- Se la risposta non è JSON (es. limite di usage) il passo si ripete; non si interpreta. In 37 il passo A2 è fallito così una volta.
 - Per concludere servono almeno 5 generazioni V1 con la regola finale (K4); una sola prova è un indizio.
 
-## 5. Criteri per accettarla nel vocabolario (checklist del MODUS_OPERANDI_JEANS)
+## 5. Criteri per accettarla nel vocabolario (checklist del tirocinio)
 - K9 è una CAUSA con il suo quando (grilletto), non una mossa vista e copiata.
 - K10 dentro la regola non c'è nessun esempio né nome di materia; gli esempi stanno sotto, separati.
 - K11 non è una regola "del modello" (completezza, una pagina, soglie di colore, disegno intero): quelle vanno in B.
@@ -58,7 +58,7 @@ E1 → V1 → R1. Se `modifico` = true: V1 con la regola nuova → R1. Dopo il s
 - K13 non è stile (font, colori, fascia): quello va in C.
 - K3 confermata su una pagina mai vista; K4 almeno 5 prove, con modello e condizioni scritti.
 - K1 si mostra entra → esce: pagina docente + suo schema + prompt esatto → pagina generata intera.
-- Ritrovata da Gilberto su una SUA pagina diversa (il suo metodo, CRITICHE_GILBERTO E punto 4).
+- Ritrovata da Gilberto su una SUA pagina diversa (il suo metodo).
 - Lui guarda la pagina generata: se l'occhio si perde, la regola non basta (K6: il conteggio dei difetti non sostituisce lo sguardo).
 
 ## 6. Come classificarla
@@ -75,14 +75,14 @@ E1 → V1 → R1. Se `modifico` = true: V1 con la regola nuova → R1. Dopo il s
 - Già da qui: la regola estratta coincide con una voce che Gilberto ha messo nello STILE ("un caso concreto con numeri piccoli"). Per questo il passo 6 (classificare) è obbligatorio prima di accettarla.
 
 ## 8. Estrarre in numeri (attenzione, macro 5) — deterministico, senza AI
-Gli script stanno in `ESPERIMENTI/41_ATTENZIONE_NUMERI/`. Le spiegazioni e i risultati sono in `NUMERI_ATTENZIONE.md` e `RISULTATI.md`.
-Una regola di attenzione non si estrae con un prompt: si **misura** sui suoi PNG. Il procedimento vale per appunti qualsiasi, anche senza la pagina del docente.
+Gli script stanno in [`strumenti/3_misura_stile_dai_numeri/`](../strumenti/3_misura_stile_dai_numeri/) (README con i comandi).
+Una regola di attenzione non si estrae con un prompt: si **misura** sui suoi schemi. Il procedimento vale per appunti qualsiasi, anche senza la pagina del docente.
 
-1. **Misura i suoi appunti.** Servono i suoi PNG a pagina intera; meglio averne 5 o più, perché i range vengono dal suo min-max.
+1. **Misura i suoi appunti.** Servono i suoi PDF o PNG a pagina intera (meglio 5 o più: i range vengono dal suo min-max) e almeno 3 pagine generate dall'AI senza regole, per vedere quali numeri le distinguono.
    ```
-   C:\Python310\python.exe -X utf8 ESPERIMENTI\41_ATTENZIONE_NUMERI\misura.py --suoi a.png b.png c.png ... --out rif_MATERIA.json
+   python -X utf8 trova_differenze.py --suoi appunti.pdf --generate cartella_generate --out rif_MATERIA
    ```
-   Lo script stampa min-max e mediana di 3 numeri:
+   Fra i numeri misurati (in `rif_MATERIA/CLASSIFICA.md`, con min-max e mediana) ci sono questi 3:
    - **colore forte (% della pagina):** la stessa funzione `sat()` del grafico delle slide, in cui il corallo #FF644B conta;
    - **zone di colore forte separate;**
    - **tinta principale:** quale percentuale dei pixel colorati prende la tinta più usata.
@@ -90,10 +90,10 @@ Una regola di attenzione non si estrae con un prompt: si **misura** sui suoi PNG
    Su Architettura (6 pagine) i valori sono 3,7-14,3% (mediana 5,8), 1-6 zone (mediana 2,5) e 68-99,5% (mediana 87,6).
 2. **Trasforma i numeri in frasi per il modello.** Ogni numero diventa un'istruzione che il modello può controllare mentre scrive HTML/SVG. Esempio: "corallo pieno su circa il {mediana}-{max tipico}% della pagina, cioè una fascia titolo più 1-2 evidenziazioni; il corallo in al massimo {zone} punti separati; almeno il {min}% del colore nella famiglia corallo-pesca".
    - Si usano numeri e oggetti concreti (px, quanti elementi, quali hex), non aggettivi ("poco", "calmo").
-   - Va bene la stessa forma delle 3 frasi di `NUMERI_ATTENZIONE.md`, parte (a).
+   - `trova_differenze.py` le scrive da solo in `rif_MATERIA/FRASI_PER_IL_MODELLO.md`.
 3. **Controlla la pagina generata.** Prima si rende la pagina in PNG, poi:
    ```
-   C:\Python310\python.exe -X utf8 ESPERIMENTI\41_ATTENZIONE_NUMERI\controlla_attenzione.py pagina.png --rif rif_MATERIA.json
+   python -X utf8 controlla_stile.py pagina.png --sorgente pagina.html --rif rif_MATERIA/numeri.json
    ```
    - Per ogni numero stampa `OK` o `FUORI`, con il range suo e un consiglio di correzione.
    - Exit code 0 se tutto è OK, 1 se qualcosa è fuori. Senza `--rif` usa i range di Architettura.
