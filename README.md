@@ -4,9 +4,13 @@ Tirocinio di Informatica (UniVR): dai miei schemi di studio estraggo un **vocabo
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/vocabolario-schemi-studio/blob/main/Demo_Pacchetto_Schemi_Colab.ipynb)
 
+![Cosa diamo all'AI e cosa c'è su GitHub](img/cosa_diamo_all_ai.png)
+
 ![Cosa trovi nelle cartelle](img/cartelle.png)
 
 ![Come funziona](img/come_funziona.png)
+
+**Ogni file, uno per uno, con cos'è e quando ti serve:** [img/mappa_file.svg](img/mappa_file.svg)
 
 - **Prova in 1 clic:** bottone Colab qui sopra. Niente chiavi, gira sugli esempi inclusi.
 - **Usa il vocabolario:** scarica `per_GPT.zip` dalla Demo e dallo a GPT o Claude in chat, poi la pagina del prof.
