@@ -11,6 +11,7 @@ Un vocabolario di regole per far generare a un modello (Claude, GPT, Gemini) **s
 
 ## Cosa c'è
 ```
+per_la_chat/                         i file pronti da dare al modello in chat (pacchetto, frasi, prompt)
 vocabolario/                         le regole da dare al modello (A, B, C, E) e il modulo per estrarne di nuove (D); PACCHETTO.pdf = tutto in un file
   completo/                          tutto il vocabolario in un file (PACCHETTO_MODELLO.md) + regole/ una per file
 strumenti/                           codice usato per preparare i dati e misurare i risultati
@@ -21,7 +22,9 @@ esempi_schemi_e_pagine_generate/     2 confronti + 1 grafico (solo pagine genera
 ```
 
 ## Come si usa il pacchetto (generare uno schema)
-Si dà al modello, in quest'ordine (dettagli e conteggio token in `vocabolario/PACCHETTO.md`):
+**In chat, la ricetta è una sola:** i file di [`per_la_chat/`](../per_la_chat/): `PACCHETTO_MODELLO.md` + `FRASI_PER_IL_MODELLO.md` + la pagina del prof, e il testo di `PROMPT.txt`. `PACCHETTO_MODELLO.md` contiene già A, B, C ed E nella forma ridotta descritta qui sotto.
+
+Come è stato composto il pacchetto, in quest'ordine (dettagli e conteggio token in `vocabolario/PACCHETTO.md`):
 1. **A_VOCABOLARIO.md** — solo le regole (macro 1-5, fino alla riga `---`). Le regole vengono prima dello stile.
 2. **B_NON_FARE.md** — solo le 5 voci **[GENERALE]** (1, 2, 6, 10, 11), una riga ciascuna, senza motivi e fonti.
 3. **C_STILE.md** — sezione 1 + elenco degli hex della palette + sezione 6, presentati come tono.
@@ -37,7 +40,7 @@ Restano fuori: gli esempi in fondo ad A e C, le tabelle numeriche di C, le voci 
 ```
 cd strumenti/3_misura_stile_dai_numeri
 pip install -r requirements.txt
-python -m playwright install chromium
+python -m playwright install --with-deps chromium   # su Windows/Mac basta: python -m playwright install chromium
 python -X utf8 trova_differenze.py --suoi esempi_numeri/suoi/Architettura_Gilberto.pdf --generate esempi_numeri/generate --prof-parole 385
 ```
 Il risultato è in `risultati_numeri/`: la classifica dei numeri che distinguono lo studente dall'AI, le frasi da dare al modello e i valori per il controllo automatico.
@@ -60,7 +63,7 @@ Ognuno ha il suo README con cosa fa, input, output e comando.
 ## Risultati principali (esperimenti 39, 40, 41, pagina "cache associativo a gruppi" di Architettura)
 - Tre numeri separano le pagine dello studente da quelle generate: colore forte 3,7-14,3% della pagina (generate: mediana 1,85%), zone di colore forte 1-6 (generate: mediana 6,5), tinta principale 68-99,5% del colore (generate: mediana 67,5%).
 - Senza regole le pagine generate sono "arcobaleno": fino a 14 macchie di colore e tinta principale sotto il 60%; con le sue regole la tinta diventa una sola, come la sua.
-- Solo 1 pagina generata su 18 sta dentro tutti e tre i suoi range: Claude + pacchetto, prova r1 (7,6% / 3 zone / 84,9%).
+- Solo 1 pagina generata su 18 sta dentro tutti e tre i suoi range del colore: Claude + pacchetto, prova r1 (7,6% / 3 zone / 84,9%). Sugli altri numeri di `controlla_stile.py` la stessa pagina è ancora FUORI (corpo del testo, testo evidenziato, testo libero, vuoto nel terzo basso): è il lavoro ancora da fare.
 - Claude + pacchetto riprende tono (fondo crema, un solo colore forte che segue il caso), il disegno centrale e la barra dell'indirizzo in 3 campi in 3 prove su 3; difetti di impaginazione: senza regole 14 e 24, con pacchetto 0, 5 e 8.
 - Cosa non passa ancora: un terzo della pagina resta vuoto, forme perfette invece di contorni a mano (ignorati 3/3), il testo del prof sparisce nelle etichette. Con GPT, la voce NOT TODO toglie le legende (0/5 contro 3/5 senza).
 

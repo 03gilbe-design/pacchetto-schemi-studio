@@ -1,0 +1,8 @@
+Ti allego:
+- PACCHETTO_MODELLO.md: le regole per fare uno schema di studio (vengono prima di tutto).
+- FRASI_PER_IL_MODELLO.md: come deve essere la pagina, con i numeri misurati sugli schemi dello studente.
+- la pagina del prof.
+
+Genera UNO schema di studio della pagina del prof, in una pagina A4 (HTML o SVG).
+Segui le regole di PACCHETTO_MODELLO.md e resta dentro i numeri di FRASI_PER_IL_MODELLO.md.
+Non aggiungere contenuti che non sono nella pagina del prof.

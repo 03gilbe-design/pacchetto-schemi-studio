@@ -13,7 +13,7 @@ Per quelli tenuti scrive la frase da dare al modello e i valori per il controllo
 **Installazione** (una volta sola):
 ```
 pip install -r requirements.txt
-python -m playwright install chromium
+python -m playwright install --with-deps chromium   # su Windows/Mac basta: python -m playwright install chromium
 ```
 
 **Prova con gli esempi inclusi** (`esempi_numeri/`: un PDF di schemi dello studente, 7 pagine di Claude in HTML/SVG):

@@ -1,0 +1,4 @@
+Trasforma la pagina del professore in UNA pagina di schema di studio, come la farebbe uno studente.
+Output: UNA pagina HTML completa (<!doctype html>...</html>), un solo file, CSS dentro <style>, A4 verticale: body largo esattamente 794px e alto 1123px, overflow hidden. Usa flex/grid e lascia che il testo vada a capo da solo (niente position:absolute per i testi). Disegni e frecce in SVG inline dentro l'HTML. Testi in italiano, niente immagini esterne, niente font esterni.
+
+La pagina del professore e' il file allegato.
