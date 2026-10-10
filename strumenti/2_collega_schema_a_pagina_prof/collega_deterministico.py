@@ -23,20 +23,28 @@ os.environ.setdefault("ANNOTATORE_DIR", _vuota)  # allinea_auto legge materiali.
 from allinea_auto import frasi_prof, blocchi_miei
 from allinea import parole
 
+from trova_differenze import errore, apri_pdf, apri_png
 PDF = {".pdf"}; IMG = {".png", ".jpg", ".jpeg", ".webp"}
 
 
-def pagine(files):
-    """file -> [(nome, file, pagina 1-based o None, testo, immagine piccola in grigi)]"""
+def pagine(files, chi="schemi"):
+    """file -> [(nome, file, pagina 1-based o None, testo, immagine piccola in grigi)]; file sbagliati -> messaggio chiaro e exit 1"""
     out = []
     for f in map(str, files):
         if Path(f).suffix.lower() in PDF:
-            for i, p in enumerate(fitz.open(f)):
+            for i, p in enumerate(apri_pdf(Path(f))):
                 pix = p.get_pixmap(dpi=30, colorspace=fitz.csGRAY)
                 out.append((f"{Path(f).name} p.{i + 1}", f, i + 1, p.get_text(), Image.frombytes("L", (pix.width, pix.height), pix.samples)))
-        elif Path(f).suffix.lower() in IMG:
-            out.append((Path(f).name, f, None, "", Image.open(f).convert("L")))
+        else:  # apri_png: errore chiaro per .docx, file vuoti, immagini rovinate
+            out.append((Path(apri_png(Path(f))).name, f, None, "", Image.open(f).convert("L")))
+    if not out: errore(f"--{chi}: nessuna pagina da leggere.")
     return out
+
+
+def bianca(img):
+    """pagina quasi uniforme (bianca o vuota): la vista la collega comunque con punteggio alto"""
+    from PIL import ImageStat
+    return ImageStat.Stat(img).stddev[0] < 4
 
 
 def impronta(img):
@@ -121,7 +129,10 @@ class Gemini:
 
 
 def collega(schemi, prof, soglia=.8, gemini=None, top=0):
-    mie, pp = pagine(schemi), pagine(prof)
+    mie, pp = pagine(schemi, "schemi"), pagine(prof, "prof")
+    if not any(x[3].strip() for x in pp):
+        print("  AVVISO: le pagine del prof non hanno testo (scansione o immagini): collego solo a vista, poco affidabile. "
+              "Controlla a occhio o usa --gemini.", flush=True)
     pag_prof, idf = pagine_prof([f for f in map(str, prof) if Path(f).suffix.lower() in PDF])
     chiave = {(f, n): k for k, (_, f, n, _, _) in enumerate(pp)}
     imp = [impronta(x[4]) for x in pp]; ris = []
@@ -137,9 +148,11 @@ def collega(schemi, prof, soglia=.8, gemini=None, top=0):
                 g, perche = gemini.scegli(m, pp, idx)
                 if g is not None: k, pun, metodo, altre = g, 0, "gemini", [perche]
         p = pp[k]
+        # affidabile: solo testo (giuste 7/7 nel test UX) o gemini; la vista sbaglia spesso e da' 0,97 anche a una pagina bianca
+        avviso = "schema bianco/vuoto" if bianca(m[4]) else ("" if metodo != "vista" else "controlla a occhio o usa --gemini")
         ris.append({"schema": m[0], "prof": p[0], "prof_file": Path(p[1]).name, "prof_pagina": p[2], "metodo": metodo,
                     "punteggio": round(pun, 2), "altre": altre, "prof_parole": len(p[3].split()) if p[3] else None,
-                    "frasi_prof_riprese": frasi_riprese(m, p)})
+                    "frasi_prof_riprese": frasi_riprese(m, p), "affidabile": not avviso, "avviso": avviso})
     return ris
 
 
@@ -149,7 +162,11 @@ def main():
     ap.add_argument("--out", default="risultati_collega_det"); ap.add_argument("--generate", help="pagine AI: se c'e' lancia trova_differenze.py")
     ap.add_argument("--gemini", action="store_true", help="pagine senza testo: sceglie Gemini (chiave GEMINI_API_KEY o GEMINI_KEY)")
     ap.add_argument("--gemini-top", type=int, default=0, help="0 = Gemini vede tutte le pagine del prof (fogli di miniature, poi 3 finaliste); N = solo le N piu simili per il codice")
-    a = ap.parse_args(); out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    a = ap.parse_args()
+    for f in [*a.schemi, *a.prof]:
+        if not Path(f).is_file(): errore(f"{f} non esiste.")
+    if a.generate and not Path(a.generate).is_dir(): errore(f"--generate: la cartella {a.generate} non esiste.")
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     gem = None
     if a.gemini:
         chiave = os.environ.get("GEMINI_API_KEY") or os.environ.get("GEMINI_KEY")
@@ -158,10 +175,10 @@ def main():
     ris = collega(a.schemi, a.prof, gemini=gem, top=a.gemini_top)
     if gem: print("chiamate Gemini:", gem.chiamate)
     (out / "collegamenti.json").write_text(json.dumps(ris, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"{'schema':42} {'pagina del prof':52} metodo punt. frasi_prof_riprese")
+    print(f"{'schema':42} {'pagina del prof':52} metodo punt. frasi_prof_riprese affidabile")
     for r in ris:
         prof = f"{r['prof_file'][:44]} p.{r['prof_pagina']}" if r["prof_pagina"] else r["prof_file"][:52]
-        print(f"{r['schema'][:42]:42} {prof:52} {r['metodo']:6} {r['punteggio']:5} {r['frasi_prof_riprese'] or '-'}", flush=True)
+        print(f"{r['schema'][:42]:42} {prof:52} {r['metodo']:6} {r['punteggio']:5} {r['frasi_prof_riprese'] or '-':18} {'si' if r['affidabile'] else 'NO: ' + r['avviso']}", flush=True)
     if a.generate:
         np_ = [r["prof_parole"] for r in ris if r["prof_parole"]]
         cmd = [sys.executable, "-X", "utf8", str(NUM / "trova_differenze.py"), "--suoi", *map(str, a.schemi), "--generate", a.generate,

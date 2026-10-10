@@ -2,8 +2,11 @@
 
 Tre strumenti: due solo codice (collega_deterministico, annotatore), uno con un modello che guarda l'immagine (Groq).
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/vocabolario-schemi-studio/blob/main/Collega_Pagine_Colab.ipynb)
+
 ## collega_deterministico.py (solo codice; su Colab: `Collega_Pagine_Colab.ipynb`)
 **Cosa fa:** per ogni pagina dei tuoi schemi (PDF o PNG) trova la pagina del prof più simile (PDF o PNG). Riusa `annotatore/prepara.py` (`pagine_prof`, `migliori`: parole rare in comune pesate IDF) quando c'è testo; senza testo ripiega su hash percettivo + istogramma. Per ogni coppia conta le frasi del prof ritrovate nello schema (`frasi_prof`, `blocchi_miei` di `3_misura_stile_dai_numeri/allinea_auto.py`, `parole` di `allinea.py`). Con `--generate` lancia `trova_differenze.py` con `--prof-parole` = mediana delle pagine del prof collegate.
+**Quando fidarsi:** la colonna `affidabile` dice `si` per i collegamenti fatti col **testo** (o con Gemini); `NO` per quelli a **vista** (scansioni, foto: nel test UX 2 giuste su 7) e per gli schemi bianchi, che la vista collega comunque con punteggio alto (0,97). Se il PDF del prof non ha testo lo script lo dice all'inizio. File vuoti, Word o cartelle che non esistono: messaggio `ERRORE:` e exit 1.
 **Prova (09/10, 15 schemi di Architettura con fonte nota, 3 PDF del prof = 314 pagine; giusta = stesso PDF e pagina ±1):**
 
 | | solo codice | codice + Gemini (fra i 5 del codice) | Gemini su tutte le pagine (`--gemini`) |

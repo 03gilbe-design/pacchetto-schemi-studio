@@ -37,21 +37,77 @@ FRASE = {
     "vuoto_%": lambda lo, hi, m: f"Spazio vuoto tra il {lo:.0f}% e il {hi:.0f}% della pagina.",
     "forme_linee_%": lambda lo, hi, m: f"Circa il {m:.0f}% delle forme sono linee (collegamenti), non riquadri.",
 }
+# se nei TUOI il numero e' sempre 0 (appunti senza colore): frase diversa o nessuna frase
+ZERO = {"colore_forte_%": "Nessun colore forte (saturo): testo e disegni in nero o grigio, al massimo qualche tinta pastello.",
+        "zone_forti": None, "tinta_dominante_%": None, "testo_evidenziato_%": "Niente background colorato dietro il testo (pillole, caselle, evidenziatore)."}
+
+
+IMG = {".png", ".jpg", ".jpeg", ".webp"}
+FOTO = {".jpg", ".jpeg"}
+
+
+def errore(msg):
+    """input sbagliato: messaggio in italiano e exit code 1 (niente traceback)"""
+    print(f"\nERRORE: {msg}", file=sys.stderr, flush=True); sys.exit(1)
+
+
+def apri_pdf(f):
+    import fitz
+    fitz.TOOLS.mupdf_display_errors(False)  # nasconde "MuPDF error: No common ancestor in structure tree": non e' un errore vero
+    if not f.is_file(): errore(f"{f} non esiste.")
+    try: doc = fitz.open(f)
+    except Exception: errore(f"{f.name} non e' un PDF valido (vuoto o rovinato). Da Word/Pages: File > Esporta > PDF.")
+    if doc.page_count == 0: errore(f"{f.name} non ha pagine.")
+    return doc
+
+
+def apri_png(f):
+    from PIL import Image
+    if not f.is_file(): errore(f"{f} non esiste.")
+    if f.suffix.lower() not in IMG and f.suffix.lower() != ".pdf":
+        errore(f"{f.name}: formato {f.suffix or 'senza estensione'} non letto. Servono PDF o immagini (.png/.jpg). Da Word: File > Esporta > PDF.")
+    try: Image.open(f).verify()
+    except Exception: errore(f"{f.name} non e' un'immagine valida (vuota o rovinata).")
+    return f
 
 
 def pagine_suoi(files, tmp):
     out = []  # (nome, png, elementi|None)
     for f in map(Path, files):
         if f.suffix.lower() == ".pdf":
-            import fitz
             from elementi import pagina_pdf
-            doc = fitz.open(f)
+            doc = apri_pdf(f)
             for i, pg in enumerate(doc):
                 png = tmp / f"suo_{f.stem}_{i + 1}.png"; pg.get_pixmap(dpi=110).save(png)
                 out.append((f"{f.name} p.{i + 1}", png, pagina_pdf(pg)))
         else:
-            out.append((f.name, f, None))
+            out.append((f.name, apri_png(f), None))
+    if any(f.suffix.lower() in FOTO for f in map(Path, files)):
+        print("  AVVISO: foto (.jpg): ombre e fondo grigio contano come disegno (il vuoto esce piu' basso). Meglio una scansione o una foto ritagliata con fondo bianco.", flush=True)
     return out
+
+
+def senza_niente(m, el):
+    """pagina senza testo vero e senza nessun colore: bianca, oppure scansione in bianco e nero"""
+    return not (el and el.get("testi")) and m.get("colore_forte_%", 0) == 0 and m.get("pastello_%", 0) == 0
+
+
+def togli_vuote(suoi, pagine):
+    """i tuoi schemi: via le pagine senza testo ne' colore (darebbero regole tipo 'colore forte 0-0%'); se non resta niente, stop"""
+    el = {nome: e for nome, _, e in pagine}
+    vuote = [x["pagina"] for x in suoi if senza_niente(x, el.get(x["pagina"]))]
+    if len(vuote) == len(suoi):
+        errore("nei tuoi schemi non c'e' niente da misurare: nessun testo e nessun colore "
+               f"({', '.join(vuote[:3])}{' ...' if len(vuote) > 3 else ''}). Pagina bianca o scansione in bianco e nero? "
+               "Serve il PDF esportato da Canva/Word/GoodNotes (con testo) o una pagina a colori.")
+    for v in vuote: print(f"  AVVISO: {v}: niente testo ne' colore, la salto.", flush=True)
+    senza_testo = [x for x, _, e in pagine if x not in vuote and e is not None and not e.get("testi")]  # e = None: immagine, non PDF
+    if senza_testo: print(f"  AVVISO: {len(senza_testo)} pagine PDF senza testo (scansione?): misuro solo l'immagine (colore, vuoto, blocchi).", flush=True)
+    tieni = [x for x in suoi if x["pagina"] not in vuote]
+    if len(tieni) < 3: print(f"  AVVISO: solo {len(tieni)} pagine tue: i range (min-max) escono strettissimi, meglio almeno 3-5 pagine.", flush=True)
+    if all(x.get("colore_forte_%", 0) == 0 for x in tieni):
+        print("  AVVISO: nei tuoi schemi non c'e' colore forte: le frasi su colore e disegni contano poco (appunti solo testo?).", flush=True)
+    return tieni
 
 
 def rendi(src, png):
@@ -65,6 +121,7 @@ def rendi(src, png):
 def generate(cartella, tmp):
     from elementi import da_html
     c = Path(cartella); out = []; usati = set()
+    if not c.is_dir(): errore(f"la cartella delle pagine generate {c} non esiste.")
     tutti = sorted(list(c.rglob("*.html")) + list(c.rglob("*.svg")))
     # se in una cartella c'e' pagina.html/svg, conta solo quella (le altre sono bozze/copie dell'agente)
     tutti = [s for s in tutti if s.stem == "pagina" or not any(x.stem == "pagina" for x in tutti if x.parent == s.parent)]
@@ -73,7 +130,9 @@ def generate(cartella, tmp):
         if not png.exists(): png = tmp / f"gen_{len(out)}.png"; rendi(src, png)
         usati.add(png.resolve()); out.append((str(src.relative_to(c)), png, da_html([("x", src)])["x"]))
     for png in sorted(c.rglob("*.png")):
-        if png.resolve() not in usati and png.name != "prof.png": out.append((str(png.relative_to(c)), png, None))
+        if png.resolve() not in usati and png.name != "prof.png": out.append((str(png.relative_to(c)), apri_png(png), None))
+    if not out: errore(f"in {c} non ci sono pagine generate (.html, .svg o .png). Mettici almeno 3 pagine fatte da un'AI.")
+    if len(out) < 3: print(f"  AVVISO: solo {len(out)} pagine generate in {c}: i numeri valgono poco, meglio almeno 3.", flush=True)
     return out
 
 
@@ -98,8 +157,10 @@ def classifica(suoi, gen, eff=None):
         sgama = fuori if rob in ("si", "sorgente") else 0.0
         e = (eff or {}).get(k)
         punt = sgama * conv * (e if e is not None else 1)
+        frase = FRASE[k](lo, hi, med) if k in FRASE and conv > 0 else None
+        if hi == 0 and k in ZERO: frase = ZERO[k]  # appunti senza colore: niente frasi "su circa il 0-0% della pagina"
         righe.append({"k": k, "nome": nome, "lo": lo, "hi": hi, "med": med, "gen_med": float(np.median(g)), "fuori": fuori, "rob": rob, "conv": conv,
-                      "eff": e, "punteggio": punt, "frase": FRASE[k](lo, hi, med) if k in FRASE and conv > 0 else None})
+                      "eff": e, "punteggio": punt, "frase": frase})
     tenuta = lambda r: r["fuori"] >= 0.5 and r["conv"] > 0 and r["rob"] in ("si", "sorgente") and r["frase"]
     righe.sort(key=lambda r: (-bool(tenuta(r)), -r["punteggio"], -r["fuori"]))
     for r in righe: r["tenuta"] = bool(tenuta(r))
@@ -122,10 +183,19 @@ def main():
     ap.add_argument("--suoi", nargs="+", required=True); ap.add_argument("--generate", required=True)
     ap.add_argument("--out", default="risultati_numeri"); ap.add_argument("--prof-parole", type=int)
     ap.add_argument("--efficace-senza"); ap.add_argument("--efficace-con")
-    a = ap.parse_args(); out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    a = ap.parse_args()
+    for d in filter(None, (a.generate, a.efficace_senza, a.efficace_con)):  # controlli prima di misurare: errori subito, non dopo un minuto
+        if not Path(d).is_dir(): errore(f"la cartella {d} non esiste.")
+        if not any(f.suffix.lower() in (".html", ".svg", ".png") for f in Path(d).rglob("*")):
+            errore(f"in {d} non ci sono pagine generate (.html, .svg o .png). Mettici almeno 3 pagine fatte da un'AI.")
+    for f in map(Path, a.suoi):
+        if not f.is_file(): errore(f"{f} non esiste.")
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix="numeri_"))
-    print("misuro i tuoi schemi...", flush=True); suoi = misura_tutto(pagine_suoi(a.suoi, tmp), None)
-    print("misuro le generate...", flush=True); gen = misura_tutto(generate(a.generate, tmp), a.prof_parole)
+    print("misuro i tuoi schemi...", flush=True); ps = pagine_suoi(a.suoi, tmp); suoi = togli_vuote(misura_tutto(ps, None), ps)
+    print("misuro le generate...", flush=True); pg = generate(a.generate, tmp); gen = misura_tutto(pg, a.prof_parole)
+    for x, (_, _, e) in zip(gen, pg):
+        if senza_niente(x, e): print(f"  AVVISO: generata {x['pagina']}: niente testo ne' colore (pagina rotta o bianca?).", flush=True)
     # ponytail: "parole rispetto al prof" per i TUOI non si calcola (servirebbe la pagina del prof di ogni tuo schema): la metrica salta
     eff = None
     if a.efficace_senza and a.efficace_con:

@@ -17,13 +17,13 @@ S2 = _leggi("misure2.json", "SUOI")
 TENUTE = {
     "colore_forte_%": ("colore forte (% pagina)", "png", "troppo poco corallo: fascia titolo piena #FF644B o 1-2 evidenziazioni", "troppo corallo: toglilo da riquadri/fondi, usa pastello"),
     "zone_forti": ("zone di colore forte", "png", "nessuna zona forte: metti la fascia titolo corallo", "troppe zone forti: corallo solo su titolo + 1-2 elementi"),
-    "tinta_dominante_%": ("tinta principale (% del colore)", "png", "troppe tinte: riduci azzurri/verdi/gialli, resta nella famiglia corallo-pesca", "-"),
+    "tinta_dominante_%": ("tinta principale (% del colore)", "png", "troppe tinte: riduci azzurri/verdi/gialli, resta nella famiglia corallo-pesca", "una tinta sola: va bene, al massimo un tocco di un'altra"),
     "vuoto_terzo_basso_%": ("vuoto nel terzo basso (%)", "png", "fondo troppo pieno: lascia respirare l'ultimo terzo", "fondo vuoto: allarga il disegno principale fino in fondo alla pagina"),
     "blocco_piu_grande_%": ("blocco piu' grande (% contenuto)", "png", "contenuto troppo frammentato: unisci i pezzi in 2-3 gruppi", "un solo blocco enorme: separa le parti con spazio (almeno 2% della larghezza)"),
-    "corpo_medio_o_grande_%": ("testo a corpo >= 14 px (%)", "src", "testo troppo piccolo: corpo del testo corrente 16-19 px su 794", "-"),
-    "testo_su_fondo_pagina_%": ("testo libero sul foglio (%)", "src", "troppo testo dentro box colorati/bianchi: scrivi sul foglio", "-"),
-    "testo_evidenziato_%": ("testo evidenziato (%)", "src", "-", "troppe pillole/caselle colorate dietro il testo: tienile per poche etichette"),
-    "parole_in_righe_lunghe_%": ("parole in frasi lunghe (%)", "src", "solo etichette: tieni frasi intere (>= 5 parole) accanto al disegno", "-"),
+    "corpo_medio_o_grande_%": ("testo a corpo >= 14 px (%)", "src", "testo troppo piccolo: corpo del testo corrente 16-19 px su 794", "testo tutto grande: titoli piu' grandi, testo corrente 16-19 px su 794"),
+    "testo_su_fondo_pagina_%": ("testo libero sul foglio (%)", "src", "troppo testo dentro box colorati/bianchi: scrivi sul foglio", "tutto il testo nudo sul foglio: metti 2-3 etichette chiave in una pillola o casella"),
+    "testo_evidenziato_%": ("testo evidenziato (%)", "src", "quasi niente evidenziato: metti 2-3 parole chiave in una pillola corallo/pesca", "troppe pillole/caselle colorate dietro il testo: tienile per poche etichette"),
+    "parole_in_righe_lunghe_%": ("parole in frasi lunghe (%)", "src", "solo etichette: tieni frasi intere (>= 5 parole) accanto al disegno", "troppe frasi lunghe: trasforma qualcuna in etichetta accanto al disegno"),
     "parole_su_prof_%": ("parole / parole del prof (%)", "src", "testo troppo compresso: tieni le frasi del prof che spiegano il perche'", "troppo testo: comprimi in etichette"),
 }
 SUOI = {k: [x[k] for x in (S1 if k in S1[0] else S2) if k in x] for k in TENUTE}
@@ -52,13 +52,23 @@ def controlla(png, src=None, prof_parole=None):
 
 
 if __name__ == "__main__":
-    a = sys.argv[1:]; src = prof = None
-    if "--rif" in a:  # range di altri suoi appunti: numeri.json scritto da trova_differenze.py
-        i = a.index("--rif"); RANGE.update({k: tuple(v) for k, v in json.loads(Path(a[i + 1]).read_text(encoding="utf-8"))["range"].items() if k in TENUTE}); a = a[:i] + a[i + 2:]
-    if "--sorgente" in a: i = a.index("--sorgente"); src = a[i + 1]; a = a[:i] + a[i + 2:]
-    if "--prof-parole" in a: i = a.index("--prof-parole"); prof = int(a[i + 1]); a = a[:i] + a[i + 2:]
+    import argparse
+    from trova_differenze import errore, apri_png
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("png", nargs="+", help="pagina generata in PNG (una o piu')")
+    ap.add_argument("--sorgente", help="pagina.html o pagina.svg da cui viene il PNG (aggiunge i numeri sul testo)")
+    ap.add_argument("--prof-parole", type=int, help="parole della pagina del docente")
+    ap.add_argument("--rif", help="numeri.json scritto da trova_differenze.py (range di altri tuoi appunti)")
+    a = ap.parse_args(); src, prof = a.sorgente, a.prof_parole
+    if a.rif:  # range di altri suoi appunti: numeri.json scritto da trova_differenze.py
+        try: RANGE.update({k: tuple(v) for k, v in json.loads(Path(a.rif).read_text(encoding="utf-8"))["range"].items() if k in TENUTE})
+        except (OSError, ValueError, KeyError): errore(f"--rif {a.rif}: non e' un numeri.json di trova_differenze.py (o non esiste).")
+    if src and not Path(src).is_file(): errore(f"--sorgente {src} non esiste.")
+    for f in a.png:
+        if f.lower().endswith(".pdf"): errore(f"{f}: serve il PNG della pagina generata, non un PDF (vedi --help).")
+        apri_png(Path(f))
     tutti_ok = True
-    for f in a:
+    for f in a.png:
         e = controlla(f, src, prof); print(f)
         for x in e.values():
             print(f"  {'OK   ' if x['ok'] else 'FUORI'} {x['nome']:34} {x['valore']:>6g}   suo {x['range_suo'][0]:g}-{x['range_suo'][1]:g}   {x['consiglio']}")
