@@ -73,6 +73,7 @@ def immagine(f, w=600):
     cont_m = ndimage.binary_dilation(diff > 20, np.ones((round(0.02 * w), round(0.02 * w))))
     lab, n = ndimage.label(cont_m); ar = np.bincount(lab.ravel())[1:]
     ar = ar[ar >= 0.003 * area] if n else np.array([0])
+    if ar.size == 0: ar = np.array([0])  # pagina quasi vuota (tutti i blocchi sotto soglia): prima crashava su ar.max()
     grande = ar.max() / max(ar.sum(), 1)
     # CONTORNI DRITTI: bordi dell'inchiostro; quota che sta in tratti orizz./vert. perfettamente dritti lunghi >= 4% di w
     bordo = ink & ~ndimage.binary_erosion(ink)
